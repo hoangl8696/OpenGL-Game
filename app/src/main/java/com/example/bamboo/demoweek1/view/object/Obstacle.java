@@ -26,10 +26,10 @@ public class Obstacle implements ExtendRenderer.DrawObject {
     private float mMove = 0;
 
     float mSquareCoords[] = {
-            -0.05f,  0.05f, 0.0f,
-            -0.05f, -0.05f, 0.0f,
-            0.05f, -0.05f, 0.0f,
-            0.05f,  0.05f, 0.0f
+            -0.1f,  0.1f, 0.0f,
+            -0.1f, -0.1f, 0.0f,
+            0.1f, -0.1f, 0.0f,
+            0.1f,  0.1f, 0.0f
     };
     short mDrawOrder[] = {0,1,2,0,2,3};
     float[] mColor = {1.0f, 0.2f, 0.2f, 1.0f};
@@ -97,12 +97,12 @@ public class Obstacle implements ExtendRenderer.DrawObject {
 
     @Override
     public float getWidth() {
-        return 0.1f;
+        return 0.2f;
     }
 
     @Override
     public float getHeight() {
-        return 0.1f;
+        return 0.2f;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class Obstacle implements ExtendRenderer.DrawObject {
         }
 
         translateX = 4.0f - mMove;
-        translateY = 0.0f;
+        translateY = -1.0f;
 
         mPossitionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");

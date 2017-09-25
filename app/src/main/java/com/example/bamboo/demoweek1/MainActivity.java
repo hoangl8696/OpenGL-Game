@@ -111,12 +111,16 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
                 SensorManager.getRotationMatrixFromVector(mRotationMatrix, sensorEvent.values);
                 SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 
-                if (15 > Math.abs(mOrientationAngles[1]*180/Math.PI)) {
+                if (15 > Math.abs(mOrientationAngles[2]*180/Math.PI)) {
                     mFrameLayout.setVisibility(View.VISIBLE);
-                    mBluetoothService.pauseService();
-                } else if (15 < Math.abs(mOrientationAngles[1]*180/Math.PI)) {
+                    if (mBluetoothService != null) {
+                        mBluetoothService.pauseService();
+                    }
+                } else if (15 < Math.abs(mOrientationAngles[2]*180/Math.PI)) {
                     mFrameLayout.setVisibility(View.GONE);
-                    mBluetoothService.unpauseService();
+                    if (mBluetoothService != null) {
+                        mBluetoothService.unpauseService();
+                    }
                 }
                 break;
         }

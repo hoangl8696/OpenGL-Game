@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.bamboo.demoweek1.MainActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container"/>
+
     <com.example.bamboo.demoweek1.view.ExtendGLSurfaceView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

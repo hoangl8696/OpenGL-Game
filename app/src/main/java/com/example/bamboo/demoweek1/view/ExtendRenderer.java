@@ -8,6 +8,8 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.Square;
@@ -60,7 +62,6 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         Matrix.setLookAtM(mViewMatrix, 0,0,0,3, 0f,0f,0f,0f, 1f,0f);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-
         mSquare.draw(mMVPMatrix, isJumping);
 
         if (isObstacle) {

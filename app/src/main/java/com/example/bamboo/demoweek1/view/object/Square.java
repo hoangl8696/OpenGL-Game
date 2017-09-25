@@ -33,13 +33,13 @@ public class Square implements ExtendRenderer.DrawObject {
     private int mTextureDataHandle;
 
     float mSquareCoords[] = {
-            -0.05f,  0.05f, 0.0f,
-            -0.05f, -0.05f, 0.0f,
-            0.05f, -0.05f, 0.0f,
-            0.05f,  0.05f, 0.0f
+            -0.15f,  0.15f, 0.0f,
+            -0.15f, -0.15f, 0.0f,
+            0.15f, -0.15f, 0.0f,
+            0.15f,  0.15f, 0.0f
     };
     short mDrawOrder[] = {0,1,2,0,2,3};
-    float[] mColor = {0.63671875f, 0.76953125f, 0.22265625f, 1.0f};
+    float[] mColor = {1.0f, 1.0f, 1.0f, 1.0f};
     float[] mTextureCoord = {
             0.0f, 0.0f,
             0.0f, 1.0f,
@@ -114,7 +114,6 @@ public class Square implements ExtendRenderer.DrawObject {
         return shader;
     }
 
-
     @Override
     public boolean canRemove() {
         return false;
@@ -122,12 +121,12 @@ public class Square implements ExtendRenderer.DrawObject {
 
     @Override
     public float getWidth() {
-        return 0.1f;
+        return 0.3f;
     }
 
     @Override
     public float getHeight() {
-        return 0.1f;
+        return 0.3f;
     }
 
     @Override
@@ -154,8 +153,8 @@ public class Square implements ExtendRenderer.DrawObject {
             }
         }
 
-        translateX = 0.0f;
-        translateY = (float) Math.sin(0.0f + jump);
+        translateX = -2.0f;
+        translateY = -1.0f + (float) Math.sin(jump)*2.0f;
 
         mPossitionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
