@@ -1,5 +1,6 @@
 package com.example.bamboo.demoweek1;
 
+import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -25,8 +26,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
+import com.example.bamboo.demoweek1.view.CalibrationFragment;
 import com.example.bamboo.demoweek1.view.ExtendGLSurfaceView;
 import com.example.bamboo.demoweek1.view.ExtendRenderer;
+import com.example.bamboo.demoweek1.view.MenuScreenFragment;
+import com.example.bamboo.demoweek1.view.PlayFragment;
 import com.libelium.mysignalsconnectkit.BluetoothManagerHelper;
 import com.libelium.mysignalsconnectkit.BluetoothManagerService;
 import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerCharacteristicsCallback;
@@ -43,20 +47,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements BluetoothConnectionService.SensorResult, SensorEventListener {
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    private ExtendGLSurfaceView mSurfaceView;
-
-    private FrameLayout mFrameLayout;
-
-    private SensorManager mSensorManager;
-    private Sensor mGameRotationVectorSensor;
-
-    private final float[] mRotationMatrix = new float[9];
-    private final float[] mOrientationAngles = new float[3];
-
+public class MainActivity extends AppCompatActivity implements CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     private BluetoothConnectionService mBluetoothService;
+    private PlayFragment playFragment;
+    private CalibrationFragment calibrationFragment;
+    private int up;
 
     private boolean mBound = false;
 
@@ -66,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
             BluetoothConnectionService.LocalBinder binder = (BluetoothConnectionService.LocalBinder) iBinder;
             mBluetoothService = binder.getInstance();
             mBound = true;
+            up = 0;
             mBluetoothService.setClient(MainActivity.this);
         }
 
@@ -79,73 +75,25 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mSurfaceView = (ExtendGLSurfaceView) findViewById(R.id.glsurfaceview);
-        mFrameLayout = (FrameLayout) findViewById(R.id.pauseview);
-        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        mGameRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
-        delegateCamera();
+        menuScreenTransaction();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_IMAGE_CAPTURE:
-                Bundle extra = data.getExtras();
-                Bitmap bitmap = (Bitmap) extra.get("data");
-                ExtendRenderer.setRawData(bitmap);
-                break;
-        }
-    }
-
-    private void delegateCamera() {
-        Intent takePicture = new Intent (MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePicture.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePicture, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        switch(sensorEvent.sensor.getType()) {
-            case Sensor.TYPE_GAME_ROTATION_VECTOR:
-                SensorManager.getRotationMatrixFromVector(mRotationMatrix, sensorEvent.values);
-                SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
-
-                if (15 > Math.abs(mOrientationAngles[2]*180/Math.PI)) {
-                    mFrameLayout.setVisibility(View.VISIBLE);
-                    if (mBluetoothService != null) {
-                        mBluetoothService.pauseService();
-                    }
-                    mSurfaceView.onPause();
-                } else if (15 < Math.abs(mOrientationAngles[2]*180/Math.PI)) {
-                    mFrameLayout.setVisibility(View.GONE);
-                    if (mBluetoothService != null) {
-                        mBluetoothService.unpauseService();
-                    }
-                    mSurfaceView.onResume();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
+    private void menuScreenTransaction() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        MenuScreenFragment screenFragment = MenuScreenFragment.newInstance();
+        ft.replace(R.id.container, screenFragment);
+        ft.commit();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mSurfaceView.onPause();
-        mSensorManager.unregisterListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Intent intent = new Intent(this, BluetoothConnectionService.class);
-        mSurfaceView.onResume();
-        mSensorManager.registerListener(this, mGameRotationVectorSensor, SensorManager.SENSOR_DELAY_UI);
         startService(intent);
     }
 
@@ -167,16 +115,69 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
 
     @Override
     public void goUp() {
-        mSurfaceView.goUp();
+        up++;
+        if (up == 10) {
+            if (calibrationFragment != null) {
+                calibrationFragment.isAirflowMonitoring(true);
+            }
+        }
+        if (playFragment != null) {
+            playFragment.goUp();
+        }
     }
 
     @Override
     public void goDown() {
-        mSurfaceView.goDown();
+        if (playFragment != null) {
+            playFragment.goDown();
+        }
     }
 
     @Override
     public void addObstacle() {
-        mSurfaceView.addObstacle();
+        if (calibrationFragment != null) {
+            calibrationFragment.isHeartMonitoring(true);
+        }
+        if (playFragment != null) {
+            playFragment.addObstacle();
+        }
+    }
+
+    @Override
+    public void onFragmentInteraction(int button) {
+        switch (button) {
+            case MenuScreenFragment.PLAY_BUTTON_CLICKED:
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                calibrationFragment = CalibrationFragment.newInstance();
+                ft.replace(R.id.container, calibrationFragment);
+                ft.commit();
+                break;
+            case MenuScreenFragment.ABOUT_BUTTON_CLICKED:
+                break;
+            case MenuScreenFragment.GUIDE_BUTTON_CLICKED:
+                break;
+        }
+    }
+
+    @Override
+    public void pauseService() {
+        if (mBluetoothService != null) {
+            mBluetoothService.pauseService();
+        }
+    }
+
+    @Override
+    public void resumeService() {
+        if (mBluetoothService != null) {
+            mBluetoothService.unpauseService();
+        }
+    }
+
+    @Override
+    public void calibrate() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        playFragment = PlayFragment.newInstance();
+        ft.replace(R.id.container, playFragment);
+        ft.commit();
     }
 }

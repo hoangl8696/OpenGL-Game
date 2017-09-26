@@ -323,7 +323,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                 if (uuid.equals(StringConstants.kUUIDPulsiOximeterSensor) || uuid.equals(StringConstants.kUUIDPulsiOximeterBLESensor)) {
                     HashMap<String, String> dataDict = LBValueConverter.manageValuePulsiOximeter(value);
                     Log.d("DEBUG", "kUUIDPulsiOximeterSensor dict: " + dataDict.get("1"));
-                    if (RESTING_HEART_BEAT == 0) {
+                    if (RESTING_HEART_BEAT == 50) {
                         RESTING_HEART_BEAT = Integer.parseInt(dataDict.get("1"));
                     }
                     int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;

@@ -57,7 +57,10 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        mTextureDataHandle = loadTexture(mRawData);
+        mTextureDataHandle = 0;
+        if (mRawData != null) {
+            mTextureDataHandle = loadTexture(mRawData);
+        }
         mSquare = new Square(mTextureDataHandle);
         mPeriodiclyGenerateObstacle = new Runnable() {
             @Override
@@ -68,7 +71,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         };
         if (mExecutor == null) {
             mExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(10);
-            mExecutor.scheduleWithFixedDelay(mPeriodiclyGenerateObstacle, 5, OBSTACLE_GENERATE_PERIOD, TimeUnit.MILLISECONDS);
+            mExecutor.scheduleWithFixedDelay(mPeriodiclyGenerateObstacle, 5000, OBSTACLE_GENERATE_PERIOD, TimeUnit.MILLISECONDS);
         }
     }
 
