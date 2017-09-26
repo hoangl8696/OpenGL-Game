@@ -39,6 +39,8 @@ public class Obstacle implements ExtendRenderer.DrawObject {
 
     private boolean isReady = false;
 
+    private static final float SPEED = 0.03f;
+
     private final String mVerTextShaderCode =
             "attribute vec4 vPosition;"
                     + "uniform mat4 uMVPMatrix;"
@@ -120,7 +122,7 @@ public class Obstacle implements ExtendRenderer.DrawObject {
         GLES20.glUseProgram(mProgram);
         if (behaviour) {
             if (!(mMove > 8.0f)) {
-                mMove += 0.05f;
+                mMove += SPEED;
             } else {
                 isReady = true;
             }

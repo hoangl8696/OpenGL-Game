@@ -1,5 +1,6 @@
 package com.example.bamboo.demoweek1.view;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +8,8 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -15,6 +18,10 @@ import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.Square;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -23,7 +30,6 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     private Context mContext;
 
     private DrawObject mSquare;
-    private DrawObject mObstacle;
 
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
@@ -42,12 +48,28 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         ExtendRenderer.mRawData = mRawData;
     }
 
+    private ScheduledThreadPoolExecutor mExecutor;
+
+    private Runnable mPeriodiclyGenerateObstacle;
+
+    private static final int OBSTACLE_GENERATE_PERIOD = 5000;
+
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        mObstacle = new Obstacle();
         mTextureDataHandle = loadTexture(mRawData);
         mSquare = new Square(mTextureDataHandle);
+        mPeriodiclyGenerateObstacle = new Runnable() {
+            @Override
+            public void run() {
+                if (!isObstacle)
+                isObstacle = true;
+            }
+        };
+        if (mExecutor == null) {
+            mExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(10);
+            mExecutor.scheduleWithFixedDelay(mPeriodiclyGenerateObstacle, 5, OBSTACLE_GENERATE_PERIOD, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
@@ -118,7 +140,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
             GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
             GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-            bitmap.recycle();
+//            bitmap.recycle();
             return textureHandle[0];
         } else {
             throw new RuntimeException("Error loading texture");

@@ -116,11 +116,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnecti
                     if (mBluetoothService != null) {
                         mBluetoothService.pauseService();
                     }
+                    mSurfaceView.onPause();
                 } else if (15 < Math.abs(mOrientationAngles[2]*180/Math.PI)) {
                     mFrameLayout.setVisibility(View.GONE);
                     if (mBluetoothService != null) {
                         mBluetoothService.unpauseService();
                     }
+                    mSurfaceView.onResume();
                 }
                 break;
         }

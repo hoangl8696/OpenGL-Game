@@ -328,7 +328,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                     }
                     int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;
                     if (difference > 0) {
-                        if (Math.random() * 100 < difference) {
+                        if ((int) Math.floor(Math.random() * 10 ) <= difference) {
                             mActivity.addObstacle();
                         }
                     }

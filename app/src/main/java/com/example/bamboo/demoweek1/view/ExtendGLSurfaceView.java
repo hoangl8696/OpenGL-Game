@@ -23,20 +23,20 @@ public class ExtendGLSurfaceView extends GLSurfaceView {
         setRenderMode(RENDERMODE_CONTINUOUSLY);
         v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
     }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                mRenderer.goDown();
-                mRenderer.addObstacle();
-                break;
-            case MotionEvent.ACTION_DOWN:
-                mRenderer.goUp();
-                break;
-        }
-        return true;
-    }
+//
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_UP:
+//                mRenderer.goDown();
+//                mRenderer.addObstacle();
+//                break;
+//            case MotionEvent.ACTION_DOWN:
+//                mRenderer.goUp();
+//                break;
+//        }
+//        return true;
+//    }
 
     public void goUp() {
         mRenderer.goUp();
