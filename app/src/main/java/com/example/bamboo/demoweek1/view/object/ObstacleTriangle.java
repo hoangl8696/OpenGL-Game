@@ -2,12 +2,11 @@ package com.example.bamboo.demoweek1.view.object;
 
 import android.opengl.GLES20;
 
-import com.example.bamboo.demoweek1.view.ExtendRenderer;
+import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 
 public class ObstacleTriangle implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
@@ -32,7 +31,7 @@ public class ObstacleTriangle implements ExtendRenderer.DrawObject {
 
     private final int VERTEX_COUNT = mTriangleCoords.length / COORDS_PER_VERTEX;
 
-    float[] mColor = {1.0f, 0.2f, 0.2f, 1.0f};
+    float[] mColor = {0.12f, 0.663f, 0.957f, 1.0f};
 
     private float translateX;
     private float translateY;
@@ -120,7 +119,7 @@ public class ObstacleTriangle implements ExtendRenderer.DrawObject {
         }
 
         translateX = 4.0f - mMove;
-        translateY = -2.0f;
+        translateY = -1.15f;
 
         mPossitionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");

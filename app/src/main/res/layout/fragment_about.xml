@@ -1,71 +1,70 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.example.bamboo.demoweek1.view.AboutFragment">
+    tools:context="com.example.bamboo.demoweek1.view.fragment.AboutFragment">
 
-    <TextView
-        android:id="@+id/aboutus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ABOUT US"
-        android:textSize="45sp"
-        android:textColor="@android:color/white"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:elevation="1dp">
+
+        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+            android:id="@+id/aboutus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ABOUT US"
+            android:textSize="45sp"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center" />
+
+        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+            android:id="@+id/gamename2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GAME NAME"
+            android:textSize="35sp"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center"/>
+
+        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+            android:id="@+id/textView5"
+            android:layout_width="585dp"
+            android:layout_height="246dp"
+            android:text="Developer team: \nOlli Lehmusvuori\nLy Hoang\n\n\nversion 0.0.1"
+            android:textSize="25sp"
+            android:gravity="center"
+            android:textColor="@color/colorAccent"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/back_buton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:elevation="1dp"
+        android:background="@drawable/backbutton1"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/gamename2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GAME NAME"
-        android:textSize="35sp"
-        android:textColor="@color/colorAccent"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="83dp"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintVertical_bias="0.0" />
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.035"
+        app:layout_constraintVertical_bias="0.087" />
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:srcCompat="@drawable/image2"
+        android:elevation="0dp"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="236dp" />
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="585dp"
-        android:layout_height="246dp"
-        android:text="Developer team: \nOlli Lehmusvuori\nLy Hoang\n\n\nversion 0.0.1"
-        android:textSize="25sp"
-        android:gravity="center"
-        android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="9dp"
-        app:layout_constraintRight_toRightOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.323"
-        app:layout_constraintLeft_toLeftOf="@+id/imageView2"
-        app:layout_constraintHorizontal_bias="0.526" />
-
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>

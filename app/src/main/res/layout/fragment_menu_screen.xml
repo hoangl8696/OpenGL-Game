@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.example.bamboo.demoweek1.view.MenuScreenFragment">
+    tools:context="com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment">
 
-    <Button
+    <com.example.bamboo.demoweek1.view.extended.ExtendButton
         android:id="@+id/tutorial"
         android:layout_width="206dp"
         android:layout_height="91dp"
@@ -24,7 +24,7 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintVertical_bias="0.086" />
 
-    <Button
+    <com.example.bamboo.demoweek1.view.extended.ExtendButton
         android:id="@+id/play"
         android:layout_width="205dp"
         android:layout_height="88dp"
@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="@+id/gamename"
         app:layout_constraintHorizontal_bias="0.501" />
 
-    <TextView
+    <com.example.bamboo.demoweek1.view.extended.ExtendTextView
         android:id="@+id/gamename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,7 +65,7 @@
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="236dp" />
 
-    <Button
+    <com.example.bamboo.demoweek1.view.extended.ExtendButton
         android:id="@+id/about"
         android:layout_width="54dp"
         android:layout_height="54dp"

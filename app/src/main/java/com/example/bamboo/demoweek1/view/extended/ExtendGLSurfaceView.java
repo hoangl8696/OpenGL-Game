@@ -1,12 +1,10 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.extended;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Vibrator;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 
 public class ExtendGLSurfaceView extends GLSurfaceView {
     private ExtendRenderer mRenderer;

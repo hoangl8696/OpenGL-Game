@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.bamboo.demoweek1.view.PlayFragment">
+    tools:context="com.example.bamboo.demoweek1.view.fragment.PlayFragment">
 
-    <com.example.bamboo.demoweek1.view.ExtendGLSurfaceView
+    <com.example.bamboo.demoweek1.view.extended.ExtendGLSurfaceView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/glsurfaceview"
@@ -14,17 +14,27 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#CCFF0000"
+        android:background="@color/colorPrimaryDark"
         android:id="@+id/pauseview"
         android:visibility="gone"
         tools:layout_editor_absoluteY="8dp"
         tools:layout_editor_absoluteX="8dp">
-        <TextView
+        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Pause"
-            android:textSize="100sp"/>
+            android:text="GAME PAUSED..."
+            android:textColor="@color/colorAccent"
+            android:textSize="50sp"/>
+        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="stand your phone up to continue"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="12dp"
+            android:textSize="25sp"/>
     </FrameLayout>
 
 </FrameLayout>

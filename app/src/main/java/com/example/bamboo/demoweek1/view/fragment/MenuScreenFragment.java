@@ -1,10 +1,8 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +11,10 @@ import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
 
-public class MenuScreenFragment extends android.app.Fragment implements View.OnClickListener{
-
-    public static final int PLAY_BUTTON_CLICKED = 0;
-    public static final int ABOUT_BUTTON_CLICKED = 1;
-    public static final int GUIDE_BUTTON_CLICKED = 2;
+public class MenuScreenFragment extends android.app.Fragment {
 
     private OnMenuFragmentInteractionListener mListener;
     private Button mPlay, mAbout, mGuide;
-    private TextView mGameName;
 
     public MenuScreenFragment() {
         // Required empty public constructor
@@ -41,17 +34,27 @@ public class MenuScreenFragment extends android.app.Fragment implements View.OnC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_menu_screen, container, false);
-        mGameName = (TextView) v.findViewById(R.id.gamename);
         mPlay = (Button) v.findViewById(R.id.play);
         mAbout = (Button) v.findViewById(R.id.about);
         mGuide = (Button) v.findViewById(R.id.tutorial);
-        mPlay.setOnClickListener(this);
-        mAbout.setOnClickListener(this);
-        mGuide.setOnClickListener(this);
-        mGameName.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
-        mPlay.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
-        mAbout.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
-        mGuide.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
+        mPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.playButtonPressed();
+            }
+        });
+        mAbout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.aboutButtonPressed();
+            }
+        });
+        mGuide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.guideButtonPressed();
+            }
+        });
         return v;
     }
 
@@ -72,22 +75,9 @@ public class MenuScreenFragment extends android.app.Fragment implements View.OnC
         mListener = null;
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.play:
-                mListener.onFragmentInteraction(PLAY_BUTTON_CLICKED);
-                break;
-            case R.id.about:
-                mListener.onFragmentInteraction(ABOUT_BUTTON_CLICKED);
-                break;
-            case R.id.tutorial:
-                mListener.onFragmentInteraction(GUIDE_BUTTON_CLICKED);
-                break;
-        }
-    }
-
     public interface OnMenuFragmentInteractionListener {
-        void onFragmentInteraction(int button);
+        void playButtonPressed();
+        void guideButtonPressed();
+        void aboutButtonPressed();
     }
 }

@@ -1,9 +1,7 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +52,9 @@ public class CalibrationFragment extends android.app.Fragment {
     }
 
     public void isHeartMonitoring (boolean monitoring) {
+        //TODO: remember to delete this, this is just for testing
+        mListener.calibrate();
+        //TODO: remember to delete this, this is just for testing
         mHeartMonitoring = monitoring;
         if (mAirflowMonitoring) {
             mListener.calibrate();

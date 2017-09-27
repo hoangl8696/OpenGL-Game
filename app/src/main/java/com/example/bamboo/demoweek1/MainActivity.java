@@ -1,53 +1,23 @@
 package com.example.bamboo.demoweek1;
 
 import android.app.FragmentTransaction;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Bitmap;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.opengl.GLSurfaceView;
-import android.os.Handler;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
-import com.example.bamboo.demoweek1.view.AboutFragment;
-import com.example.bamboo.demoweek1.view.CalibrationFragment;
-import com.example.bamboo.demoweek1.view.ExtendGLSurfaceView;
-import com.example.bamboo.demoweek1.view.ExtendRenderer;
-import com.example.bamboo.demoweek1.view.GuideFragment;
-import com.example.bamboo.demoweek1.view.MenuScreenFragment;
-import com.example.bamboo.demoweek1.view.PlayFragment;
-import com.libelium.mysignalsconnectkit.BluetoothManagerHelper;
-import com.libelium.mysignalsconnectkit.BluetoothManagerService;
-import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerCharacteristicsCallback;
-import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerHelperCallback;
-import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerQueueCallback;
-import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerServicesCallback;
-import com.libelium.mysignalsconnectkit.pojo.LBSensorObject;
-import com.libelium.mysignalsconnectkit.utils.BitManager;
-import com.libelium.mysignalsconnectkit.utils.LBValueConverter;
-import com.libelium.mysignalsconnectkit.utils.StringConstants;
-import com.libelium.mysignalsconnectkit.utils.Utils;
+import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
+import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
+import com.example.bamboo.demoweek1.view.fragment.GuideFragment;
+import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
+import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     private BluetoothConnectionService mBluetoothService;
@@ -78,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         menuScreenTransaction();
     }
@@ -87,6 +59,31 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         MenuScreenFragment screenFragment = MenuScreenFragment.newInstance();
         ft.replace(R.id.container, screenFragment);
         ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
+    private void calibrationScreenTransaction() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        calibrationFragment = CalibrationFragment.newInstance();
+        ft.replace(R.id.container, calibrationFragment);
+        ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
+    private void aboutScreenTransaction() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        aboutFragment = AboutFragment.newInstance();
+        ft.replace(R.id.container, aboutFragment);
+        ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
+    private void guideScreenTransaction() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        guideFragment = GuideFragment.newInstance();
+        ft.replace(R.id.container, guideFragment);
+        ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override
@@ -148,28 +145,6 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     }
 
     @Override
-    public void onFragmentInteraction(int button) {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        switch (button) {
-            case MenuScreenFragment.PLAY_BUTTON_CLICKED:
-                calibrationFragment = CalibrationFragment.newInstance();
-                ft.replace(R.id.container, calibrationFragment);
-                ft.commit();
-                break;
-            case MenuScreenFragment.ABOUT_BUTTON_CLICKED:
-                aboutFragment = AboutFragment.newInstance();
-                ft.replace(R.id.container, aboutFragment);
-                ft.commit();
-                break;
-            case MenuScreenFragment.GUIDE_BUTTON_CLICKED:
-                guideFragment = GuideFragment.newInstance();
-                ft.replace(R.id.container, guideFragment);
-                ft.commit();
-                break;
-        }
-    }
-
-    @Override
     public void pauseService() {
         if (mBluetoothService != null) {
             mBluetoothService.pauseService();
@@ -193,11 +168,26 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
 
     @Override
     public void aboutBackPressed() {
-
+        menuScreenTransaction();
     }
 
     @Override
     public void guideBackPressed() {
+        menuScreenTransaction();
+    }
 
+    @Override
+    public void playButtonPressed() {
+        calibrationScreenTransaction();
+    }
+
+    @Override
+    public void guideButtonPressed() {
+        guideScreenTransaction();
+    }
+
+    @Override
+    public void aboutButtonPressed() {
+        aboutScreenTransaction();
     }
 }

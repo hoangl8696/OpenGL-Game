@@ -2,7 +2,7 @@ package com.example.bamboo.demoweek1.view.object;
 
 import android.opengl.GLES20;
 
-import com.example.bamboo.demoweek1.view.ExtendRenderer;
+import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

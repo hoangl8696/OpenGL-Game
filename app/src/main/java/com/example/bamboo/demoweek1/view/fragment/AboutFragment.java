@@ -1,20 +1,17 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageButton;
 
 import com.example.bamboo.demoweek1.R;
 
 public class AboutFragment extends android.app.Fragment {
     private OnAboutFragmentInteractionListener mListener;
-    private TextView txt1,txt2,txt3;
+    private ImageButton btn;
 
     public AboutFragment() {
         // Required empty public constructor
@@ -34,12 +31,13 @@ public class AboutFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_about, container, false);
-        txt1 = (TextView) v.findViewById(R.id.gamename2);
-        txt2 = (TextView) v.findViewById(R.id.aboutus);
-        txt3 = (TextView) v.findViewById(R.id.textView5);
-        txt1.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
-        txt2.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
-        txt3.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/abc.ttf"));
+        btn = (ImageButton) v.findViewById(R.id.back_buton);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.aboutBackPressed();
+            }
+        });
         return v;
     }
 

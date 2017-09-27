@@ -1,4 +1,4 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,20 +7,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.example.bamboo.demoweek1.R;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import com.example.bamboo.demoweek1.view.extended.ExtendGLSurfaceView;
+import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 
 import static android.content.Context.SENSOR_SERVICE;
 

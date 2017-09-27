@@ -1,6 +1,5 @@
-package com.example.bamboo.demoweek1.view;
+package com.example.bamboo.demoweek1.view.extended;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,19 +7,15 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
+import com.example.bamboo.demoweek1.view.object.Ground;
 import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.ObstacleTriangle;
 import com.example.bamboo.demoweek1.view.object.Square;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +25,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class ExtendRenderer implements GLSurfaceView.Renderer {
     private Context mContext;
 
-    private DrawObject mSquare;
+    private DrawObject mSquare, mGround;
 
     private boolean isTriangleObstacle = true;
 
@@ -59,12 +54,13 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.31f, 0.765f, 0.969f, 1.0f);
         mTextureDataHandle = 0;
         if (mRawData != null) {
             mTextureDataHandle = loadTexture(mRawData);
         }
         mSquare = new Square(mTextureDataHandle);
+        mGround = new Ground();
         mPeriodiclyGenerateObstacle = new Runnable() {
             @Override
             public void run() {
@@ -92,6 +88,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         Matrix.setLookAtM(mViewMatrix, 0,0,0,3, 0f,0f,0f,0f, 1f,0f);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
         mSquare.draw(mMVPMatrix, isJumping);
+        mGround.draw(mMVPMatrix, false);
 
         if (isObstacle) {
             if (isTriangleObstacle) {

@@ -9,72 +9,55 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-public class Square implements ExtendRenderer.DrawObject {
+public class Ground implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;
-    static final int TEXTURE_COORDS_DATA_SIZE = 2;
 
     private FloatBuffer mVertexBuffer;
     private ShortBuffer mDrawOrderBuffer;
-    private FloatBuffer mTextureBuffer;
 
     private int mProgram;
-
-    private float jump = 0;
-
-    private final float mGrace = 0.05f;
 
     private int mPossitionHandle;
     private int mColorHandle;
     private int mMVPMatrixHandle;
-    private int mJumpHandle;
-    private int mTextureUniformHandle;
-    private int mTextureCoordHandle;
-    private int mTextureDataHandle;
+    private int mMoveHandle;
 
-    float mSquareCoords[] = {
-            -0.15f,  0.15f, 0.0f,
-            -0.15f, -0.15f, 0.0f,
-            0.15f, -0.15f, 0.0f,
-            0.15f,  0.15f, 0.0f
+    float mGroundCoords[] = {
+            -2.0f,  0.25f, 0.0f,
+            -2.0f, -0.25f, 0.0f,
+            2.0f, -0.25f, 0.0f,
+            2.0f,  0.25f, 0.0f
     };
+
     short mDrawOrder[] = {0,1,2,0,2,3};
-    float[] mColor = {0.004f, 0.341f, 0.608f, 1.0f};
-    float[] mTextureCoord = {
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-    };
+    float[] mColor = {0.235f, 0.722f, 0.471f, 1.0f};
 
     private float translateX;
     private float translateY;
+
+    private boolean isReady = false;
+
+    private static final float SPEED = 0.03f;
 
     private final String mVerTextShaderCode =
             "attribute vec4 vPosition;"
                     + "uniform mat4 uMVPMatrix;"
                     + "uniform vec2 translate;"
-                    + "attribute vec2 aTexCoordinate;"
-                    + "varying vec2 vTexCoordinate;"
                     + "void main() {"
                     + "   gl_Position = uMVPMatrix * vPosition + vec4(translate.x, translate.y, 0.0f, 0.0f);"
-                    + "   vTexCoordinate = aTexCoordinate;"
                     + "}";
 
     private final String mFragmentShaderCode =
             "precision mediump float;"
                     + "uniform vec4 vColor;"
-                    + "uniform sampler2D uTexture;"
-                    + "varying vec2 vTexCoordinate;"
                     + "void main() {"
-//                    + "    gl_FragColor = (vColor * texture2D(uTexture, vTexCoordinate));"
                     + "    gl_FragColor = vColor;"
                     + "}";
 
-    public Square(int textureHandle) {
+    public Ground() {
         setUpBuffer();
         setUpProgram();
-        mTextureDataHandle = textureHandle;
     }
 
     private void setUpProgram() {
@@ -84,29 +67,6 @@ public class Square implements ExtendRenderer.DrawObject {
         GLES20.glLinkProgram(mProgram);
     }
 
-    private void setUpBuffer() {
-        ByteBuffer bb1 = ByteBuffer.allocateDirect(mSquareCoords.length*4);
-        ByteBuffer bb2 = ByteBuffer.allocateDirect(mSquareCoords.length*2);
-        ByteBuffer bb3 = ByteBuffer.allocateDirect(mTextureCoord.length*4);
-
-        bb1.order(ByteOrder.nativeOrder());
-        bb2.order(ByteOrder.nativeOrder());
-        bb3.order(ByteOrder.nativeOrder());
-
-        mVertexBuffer = bb1.asFloatBuffer();
-        mDrawOrderBuffer = bb2.asShortBuffer();
-        mTextureBuffer = bb3.asFloatBuffer();
-
-        mVertexBuffer.put(mSquareCoords);
-        mDrawOrderBuffer.put(mDrawOrder);
-        mTextureBuffer.put(mTextureCoord);
-
-        mVertexBuffer.position(0);
-        mDrawOrderBuffer.position(0);
-        mTextureBuffer.position(0);
-    }
-
-
     private static int loadShader (int type, String shaderCode) {
         int shader = GLES20.glCreateShader(type);
         GLES20.glShaderSource(shader, shaderCode);
@@ -114,61 +74,59 @@ public class Square implements ExtendRenderer.DrawObject {
         return shader;
     }
 
+    private void setUpBuffer() {
+        ByteBuffer bb1 = ByteBuffer.allocateDirect(mGroundCoords.length*4);
+        ByteBuffer bb2 = ByteBuffer.allocateDirect(mGroundCoords.length*2);
+
+        bb1.order(ByteOrder.nativeOrder());
+        bb2.order(ByteOrder.nativeOrder());
+
+        mVertexBuffer = bb1.asFloatBuffer();
+        mDrawOrderBuffer = bb2.asShortBuffer();
+
+        mVertexBuffer.put(mGroundCoords);
+        mDrawOrderBuffer.put(mDrawOrder);
+
+        mVertexBuffer.position(0);
+        mDrawOrderBuffer.position(0);
+    }
+
     @Override
     public boolean canRemove() {
-        return false;
+        return isReady;
     }
 
     @Override
     public float getWidth() {
-        return 0.3f;
+        return 8.0f;
     }
 
     @Override
     public float getHeight() {
-        return 0.3f;
+        return 4.0f;
     }
 
     @Override
     public float getCenterX() {
-        return mSquareCoords[0] + getWidth()/2 + translateX;
+        return mGroundCoords[0] + getWidth()/2 + translateX;
     }
 
     @Override
     public float getCenterY() {
-        return mSquareCoords[1] - getHeight()/2 + translateY;
+        return mGroundCoords[1] - getHeight()/2 + translateY;
     }
 
     @Override
     public void draw(float[] matrix, boolean behaviour) {
         GLES20.glUseProgram(mProgram);
 
-        if (behaviour) {
-            if (jump < 1.5) {
-                jump += mGrace;
-            }
-        } else {
-            if (jump > 0) {
-                jump -= mGrace;
-            }
-        }
-
-        translateX = -2.0f;
-        translateY = -1.0f + (float) Math.sin(jump)*2.0f;
+        translateX = 0.0f;
+        translateY = -2.25f;
 
         mPossitionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        mJumpHandle = GLES20.glGetUniformLocation(mProgram, "translate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "uTexture");
-        mTextureCoordHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoordinate");
-
-        GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
-        GLES20.glVertexAttribPointer(mTextureCoordHandle, TEXTURE_COORDS_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
-        GLES20.glUniform1i(mTextureUniformHandle, 0);
+        mMoveHandle = GLES20.glGetUniformLocation(mProgram, "translate");
 
         GLES20.glEnableVertexAttribArray(mPossitionHandle);
         GLES20.glVertexAttribPointer(mPossitionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, mVertexBuffer);
@@ -177,10 +135,9 @@ public class Square implements ExtendRenderer.DrawObject {
 
         GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
 
-        GLES20.glUniform2f(mJumpHandle, translateX, translateY);
+        GLES20.glUniform2f(mMoveHandle, translateX, translateY);
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mDrawOrder.length, GLES20.GL_UNSIGNED_SHORT, mDrawOrderBuffer);
         GLES20.glDisableVertexAttribArray(mPossitionHandle);
-        GLES20.glDisableVertexAttribArray(mTextureCoordHandle);
     }
 }
