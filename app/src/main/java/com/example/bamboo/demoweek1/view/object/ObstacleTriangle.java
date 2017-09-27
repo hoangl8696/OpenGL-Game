@@ -9,12 +9,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-public class Obstacle implements ExtendRenderer.DrawObject {
+public class ObstacleTriangle implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;
 
     private FloatBuffer mVertexBuffer;
-    private ShortBuffer mDrawOrderBuffer;
 
     private int mProgram;
 
@@ -25,14 +24,14 @@ public class Obstacle implements ExtendRenderer.DrawObject {
 
     private float mMove = 0;
 
-    float mSquareCoords[] = {
-            -0.1f,  0.1f, 0.0f,
+    float mTriangleCoords[] = {
+            0.0f,  0.1f, 0.0f,
             -0.1f, -0.1f, 0.0f,
-            0.1f, -0.1f, 0.0f,
-            0.1f,  0.1f, 0.0f
+            0.1f, -0.1f, 0.0f
     };
 
-    short mDrawOrder[] = {0,1,2,0,2,3};
+    private final int VERTEX_COUNT = mTriangleCoords.length / COORDS_PER_VERTEX;
+
     float[] mColor = {1.0f, 0.2f, 0.2f, 1.0f};
 
     private float translateX;
@@ -57,7 +56,7 @@ public class Obstacle implements ExtendRenderer.DrawObject {
                     + "    gl_FragColor = vColor;"
                     + "}";
 
-    public Obstacle() {
+    public ObstacleTriangle() {
         setUpBuffer();
         setUpProgram();
     }
@@ -77,20 +76,11 @@ public class Obstacle implements ExtendRenderer.DrawObject {
     }
 
     private void setUpBuffer() {
-        ByteBuffer bb1 = ByteBuffer.allocateDirect(mSquareCoords.length*4);
-        ByteBuffer bb2 = ByteBuffer.allocateDirect(mSquareCoords.length*2);
-
-        bb1.order(ByteOrder.nativeOrder());
-        bb2.order(ByteOrder.nativeOrder());
-
-        mVertexBuffer = bb1.asFloatBuffer();
-        mDrawOrderBuffer = bb2.asShortBuffer();
-
-        mVertexBuffer.put(mSquareCoords);
-        mDrawOrderBuffer.put(mDrawOrder);
-
+        ByteBuffer bb = ByteBuffer.allocateDirect(mTriangleCoords.length*4);
+        bb.order(ByteOrder.nativeOrder());
+        mVertexBuffer = bb.asFloatBuffer();
+        mVertexBuffer.put(mTriangleCoords);
         mVertexBuffer.position(0);
-        mDrawOrderBuffer.position(0);
     }
 
     @Override
@@ -110,12 +100,12 @@ public class Obstacle implements ExtendRenderer.DrawObject {
 
     @Override
     public float getCenterX() {
-        return mSquareCoords[0] + getWidth()/2 + translateX;
+        return mTriangleCoords[0] + translateX;
     }
 
     @Override
     public float getCenterY() {
-        return mSquareCoords[1] - getHeight()/2 + translateY;
+        return mTriangleCoords[1] - getHeight()/2 + translateY;
     }
 
     @Override
@@ -130,7 +120,7 @@ public class Obstacle implements ExtendRenderer.DrawObject {
         }
 
         translateX = 4.0f - mMove;
-        translateY = -1.0f;
+        translateY = -2.0f;
 
         mPossitionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
@@ -146,7 +136,7 @@ public class Obstacle implements ExtendRenderer.DrawObject {
 
         GLES20.glUniform2f(mMoveHandle, translateX, translateY);
 
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, mDrawOrder.length, GLES20.GL_UNSIGNED_SHORT, mDrawOrderBuffer);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, VERTEX_COUNT);
         GLES20.glDisableVertexAttribArray(mPossitionHandle);
     }
 }

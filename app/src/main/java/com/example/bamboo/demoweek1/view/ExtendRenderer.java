@@ -15,6 +15,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.example.bamboo.demoweek1.view.object.Obstacle;
+import com.example.bamboo.demoweek1.view.object.ObstacleTriangle;
 import com.example.bamboo.demoweek1.view.object.Square;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     private Context mContext;
 
     private DrawObject mSquare;
+
+    private boolean isTriangleObstacle = true;
 
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
@@ -80,6 +83,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0,0, width, height);
         float ratio = (float) width/height;
         Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1,1,3,7);
+        list.clear();
     }
 
     @Override
@@ -90,7 +94,11 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         mSquare.draw(mMVPMatrix, isJumping);
 
         if (isObstacle) {
-            list.add(new Obstacle());
+            if (isTriangleObstacle) {
+                list.add(new ObstacleTriangle());
+            } else {
+                list.add(new Obstacle());
+            }
             isObstacle = false;
         }
 

@@ -313,10 +313,10 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                 if (uuid.equals(StringConstants.kUUIDAirflowSensor)) {
                     HashMap<String, String> dataDict = LBValueConverter.manageValueAirflow(value);
                     Log.d("DEBUG", "kUUIDAirflowSensor dict: " + dataDict.get("1"));
-                    if (Integer.parseInt(dataDict.get("1") ) == 0) {
-                        mActivity.goDown();
-                    } else {
+                    if (Integer.parseInt(dataDict.get("1") ) >= 100) {
                         mActivity.goUp();
+                    } else {
+                        mActivity.goDown();
                     }
                 }
 

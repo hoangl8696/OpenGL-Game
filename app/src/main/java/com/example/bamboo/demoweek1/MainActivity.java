@@ -26,9 +26,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
+import com.example.bamboo.demoweek1.view.AboutFragment;
 import com.example.bamboo.demoweek1.view.CalibrationFragment;
 import com.example.bamboo.demoweek1.view.ExtendGLSurfaceView;
 import com.example.bamboo.demoweek1.view.ExtendRenderer;
+import com.example.bamboo.demoweek1.view.GuideFragment;
 import com.example.bamboo.demoweek1.view.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.PlayFragment;
 import com.libelium.mysignalsconnectkit.BluetoothManagerHelper;
@@ -47,10 +49,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     private BluetoothConnectionService mBluetoothService;
     private PlayFragment playFragment;
     private CalibrationFragment calibrationFragment;
+    private GuideFragment guideFragment;
+    private AboutFragment aboutFragment;
     private int up;
 
     private boolean mBound = false;
@@ -145,16 +149,22 @@ public class MainActivity extends AppCompatActivity implements CalibrationFragme
 
     @Override
     public void onFragmentInteraction(int button) {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
         switch (button) {
             case MenuScreenFragment.PLAY_BUTTON_CLICKED:
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
                 calibrationFragment = CalibrationFragment.newInstance();
                 ft.replace(R.id.container, calibrationFragment);
                 ft.commit();
                 break;
             case MenuScreenFragment.ABOUT_BUTTON_CLICKED:
+                aboutFragment = AboutFragment.newInstance();
+                ft.replace(R.id.container, aboutFragment);
+                ft.commit();
                 break;
             case MenuScreenFragment.GUIDE_BUTTON_CLICKED:
+                guideFragment = GuideFragment.newInstance();
+                ft.replace(R.id.container, guideFragment);
+                ft.commit();
                 break;
         }
     }
@@ -179,5 +189,15 @@ public class MainActivity extends AppCompatActivity implements CalibrationFragme
         playFragment = PlayFragment.newInstance();
         ft.replace(R.id.container, playFragment);
         ft.commit();
+    }
+
+    @Override
+    public void aboutBackPressed() {
+
+    }
+
+    @Override
+    public void guideBackPressed() {
+
     }
 }
