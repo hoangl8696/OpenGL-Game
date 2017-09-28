@@ -67,21 +67,41 @@ public class Square implements ExtendRenderer.DrawObject {
                     + "uniform sampler2D uTexture;"
                     + "varying vec2 vTexCoordinate;"
                     + "void main() {"
-//                    + "    gl_FragColor = (vColor * texture2D(uTexture, vTexCoordinate));"
+                    + "    gl_FragColor = texture2D(uTexture, vTexCoordinate);"
+//                    + "    gl_FragColor = vColor;"
+                    + "}";
+
+    private final String mFragmentShaderCode2 =
+            "precision mediump float;"
+                    + "uniform vec4 vColor;"
+                    + "uniform sampler2D uTexture;"
+                    + "varying vec2 vTexCoordinate;"
+                    + "void main() {"
+//                    + "    gl_FragColor = texture2D(uTexture, vTexCoordinate);"
                     + "    gl_FragColor = vColor;"
                     + "}";
 
     public Square(int textureHandle) {
-        setUpBuffer();
-        setUpProgram();
+        if (textureHandle == -1) {
+            setUpProgram(false);
+        } else {
+            setUpProgram(true);
+        }
         mTextureDataHandle = textureHandle;
+        setUpBuffer();
     }
 
-    private void setUpProgram() {
+    private void setUpProgram(boolean which) {
         mProgram = GLES20.glCreateProgram();
-        GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_VERTEX_SHADER, mVerTextShaderCode));
-        GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_FRAGMENT_SHADER, mFragmentShaderCode));
-        GLES20.glLinkProgram(mProgram);
+        if (which) {
+            GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_VERTEX_SHADER, mVerTextShaderCode));
+            GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_FRAGMENT_SHADER, mFragmentShaderCode));
+            GLES20.glLinkProgram(mProgram);
+        } else {
+            GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_VERTEX_SHADER, mVerTextShaderCode));
+            GLES20.glAttachShader(mProgram, loadShader(GLES20.GL_FRAGMENT_SHADER, mFragmentShaderCode2));
+            GLES20.glLinkProgram(mProgram);
+        }
     }
 
     private void setUpBuffer() {
@@ -160,15 +180,20 @@ public class Square implements ExtendRenderer.DrawObject {
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         mJumpHandle = GLES20.glGetUniformLocation(mProgram, "translate");
-        mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "uTexture");
-        mTextureCoordHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoordinate");
+        if (mTextureDataHandle != -1) {
+            mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "uTexture");
+            mTextureCoordHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoordinate");
 
-        GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
-        GLES20.glVertexAttribPointer(mTextureCoordHandle, TEXTURE_COORDS_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+            GLES20.glEnableVertexAttribArray(mTextureCoordHandle);
+            GLES20.glVertexAttribPointer(mTextureCoordHandle, TEXTURE_COORDS_DATA_SIZE, GLES20.GL_FLOAT, false, 0, mTextureBuffer);
+        }
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
-        GLES20.glUniform1i(mTextureUniformHandle, 0);
+
+        if (mTextureDataHandle != -1) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
+            GLES20.glUniform1i(mTextureUniformHandle, 0);
+        }
 
         GLES20.glEnableVertexAttribArray(mPossitionHandle);
         GLES20.glVertexAttribPointer(mPossitionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, VERTEX_STRIDE, mVertexBuffer);
@@ -181,6 +206,8 @@ public class Square implements ExtendRenderer.DrawObject {
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, mDrawOrder.length, GLES20.GL_UNSIGNED_SHORT, mDrawOrderBuffer);
         GLES20.glDisableVertexAttribArray(mPossitionHandle);
-        GLES20.glDisableVertexAttribArray(mTextureCoordHandle);
+        if (mTextureDataHandle != -1) {
+            GLES20.glDisableVertexAttribArray(mTextureCoordHandle);
+        }
     }
 }

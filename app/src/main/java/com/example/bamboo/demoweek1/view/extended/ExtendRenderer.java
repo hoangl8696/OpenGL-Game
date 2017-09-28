@@ -42,8 +42,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
 
     private static Bitmap mRawData;
 
-    public static void setRawData(Bitmap mRawData) {
-        ExtendRenderer.mRawData = mRawData;
+    public static void setRawData(Bitmap data) {
+        ExtendRenderer.mRawData = data;
     }
 
     private ScheduledThreadPoolExecutor mExecutor;
@@ -56,9 +56,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         GLES20.glClearColor(0.31f, 0.765f, 0.969f, 1.0f);
         mTextureDataHandle = 0;
-        if (mRawData != null) {
-            mTextureDataHandle = loadTexture(mRawData);
-        }
+
+        mTextureDataHandle = loadTexture(mRawData);
         mSquare = new Square(mTextureDataHandle);
         mGround = new Ground();
         mPeriodiclyGenerateObstacle = new Runnable() {
@@ -135,23 +134,27 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     }
 
     public static int loadTexture (Bitmap data) {
-        int[] textureHandle = new int[1];
-        GLES20.glGenTextures(1, textureHandle, 0);
+        if (data != null) {
+            int[] textureHandle = new int[1];
+            GLES20.glGenTextures(1, textureHandle, 0);
 
-        if (textureHandle[0] != 0) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = true;
-            Bitmap bitmap  = data;
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+            if (textureHandle[0] != 0) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = true;
+                Bitmap bitmap = data;
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
+                GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_REPEAT);
+                GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
 //            bitmap.recycle();
-            return textureHandle[0];
+                return textureHandle[0];
+            } else {
+                throw new RuntimeException("Error loading texture");
+            }
         } else {
-            throw new RuntimeException("Error loading texture");
+            return -1;
         }
     }
 

@@ -313,6 +313,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                 if (uuid.equals(StringConstants.kUUIDAirflowSensor)) {
                     HashMap<String, String> dataDict = LBValueConverter.manageValueAirflow(value);
                     Log.d("DEBUG", "kUUIDAirflowSensor dict: " + dataDict.get("1"));
+                    mActivity.airflowStreaming(Integer.parseInt(dataDict.get("1")));
                     if (Integer.parseInt(dataDict.get("1") ) >= 100) {
                         mActivity.goUp();
                     } else {
@@ -323,7 +324,8 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                 if (uuid.equals(StringConstants.kUUIDPulsiOximeterSensor) || uuid.equals(StringConstants.kUUIDPulsiOximeterBLESensor)) {
                     HashMap<String, String> dataDict = LBValueConverter.manageValuePulsiOximeter(value);
                     Log.d("DEBUG", "kUUIDPulsiOximeterSensor dict: " + dataDict.get("1"));
-                    if (RESTING_HEART_BEAT == 50) {
+                    mActivity.pulseStreaming(Integer.parseInt(dataDict.get("1")));
+                    if (RESTING_HEART_BEAT == 0) {
                         RESTING_HEART_BEAT = Integer.parseInt(dataDict.get("1"));
                     }
                     int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;
@@ -476,5 +478,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
         void goUp();
         void goDown();
         void addObstacle();
+        void pulseStreaming(int data);
+        void airflowStreaming(int data);
     }
 }

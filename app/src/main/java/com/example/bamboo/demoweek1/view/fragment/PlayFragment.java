@@ -97,9 +97,13 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
-                Bundle extra = data.getExtras();
-                Bitmap bitmap = (Bitmap) extra.get("data");
-                ExtendRenderer.setRawData(bitmap);
+                if (data != null) {
+                    Bundle extra = data.getExtras();
+                    Bitmap bitmap = (Bitmap) extra.get("data");
+                    ExtendRenderer.setRawData(bitmap);
+                } else {
+                    ExtendRenderer.setRawData(null);
+                }
 //                calibrate();
                 break;
         }
