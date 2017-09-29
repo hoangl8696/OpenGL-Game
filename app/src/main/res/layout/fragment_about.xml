@@ -25,7 +25,7 @@
             android:id="@+id/gamename2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GAME NAME"
+            android:text="DON'T PANIC"
             android:textSize="35sp"
             android:textColor="@color/colorAccent"
             android:layout_gravity="center"/>

@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
+import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
 import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
 import com.example.bamboo.demoweek1.view.fragment.DialogFragment;
@@ -26,11 +27,7 @@ import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 
-public class MainActivity extends AppCompatActivity implements DialogFragment.OnDialogFragmentInteractionListener, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
-    private static final String DIALOG_TITLE = "Not pluged in";
-    private static final String DIALOG_DESCRIPTION = "This game is battery intensive, please plug your phone to a power source";
-    private static final String DIALOG_POS_BTN = "Retry";
-    private static final String DIALOG_NEG_BTN = "Cancel";
+public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
 
     private BluetoothConnectionService mBluetoothService;
     private PlayFragment playFragment;
@@ -44,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
     private boolean mBound = false;
     private boolean mIsBRRegistered = false;
     private boolean mIsCharging = false;
+
+    private boolean mIsPlaying = false;
 
     private ServiceConnection mConnection =  new ServiceConnection() {
         @Override
@@ -92,11 +91,39 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
 
     @Override
     public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() > 0) {
-            getFragmentManager().popBackStack();
+        if (mIsPlaying) {
+            showExitDialog();
         } else {
-            super.onBackPressed();
+            if (getFragmentManager().getBackStackEntryCount() > 0) {
+                getFragmentManager().popBackStack();
+            } else {
+                showExitDialog();
+            }
         }
+    }
+
+    private void showExitDialog() {
+        final String DIALOG_TITLE = "Exiting";
+        final String DIALOG_DESCRIPTION = "Quit the game?";
+        final String DIALOG_POS_BTN = "Yes";
+        final String DIALOG_NEG_BTN = "No";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("exit dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                MainActivity.super.onBackPressed();
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                //Dismiss, nothing happen
+            }
+        });
+        dialogFragment.show(manager, "exit dialog");
     }
 
     private void menuScreenTransaction() {
@@ -129,6 +156,21 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
         getSupportFragmentManager().executePendingTransactions();
     }
 
+    private void playScreenTransaction(int isCamera) {
+        mIsPlaying = true;
+        if (isCamera == 0) {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            playFragment = PlayFragment.newInstance(true);
+            ft.replace(R.id.container, playFragment);
+            ft.commit();
+        } else {
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            playFragment = PlayFragment.newInstance(false);
+            ft.replace(R.id.container, playFragment);
+            ft.commit();
+        }
+    }
+
     private void guideScreenTransaction() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         guideFragment = GuideFragment.newInstance();
@@ -151,13 +193,24 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
         if (calibrationFragment != null) {
             calibrationFragment.airflowData(data);
         }
+        if (playFragment != null) {
+            playFragment.airflowData(data);
+        }
     }
 
     @Override
-    public void pulseStreaming(int data) {
+    public void pulseStreaming(final int data) {
         if (calibrationFragment != null) {
             calibrationFragment.isHeartMonitoring(true);
             calibrationFragment.heartData(data);
+        }
+        if (playFragment != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    playFragment.pulseData(data);
+                }
+            });
         }
     }
 
@@ -234,10 +287,44 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
 
     @Override
     public void calibrate() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        playFragment = PlayFragment.newInstance();
-        ft.replace(R.id.container, playFragment);
-        ft.commit();
+        showCameraDialog();
+    }
+
+    @Override
+    public void setRestingPulse(final int data) {
+        if (playFragment!=null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    playFragment.setRestingPulse(data);
+                }
+            });
+        }
+    }
+
+    private void showCameraDialog() {
+        final String DIALOG_TITLE = "Signals calibrated!";
+        final String DIALOG_DESCRIPTION = "Do you also want to take a picture, this will be used to customize your cube";
+        final String DIALOG_POS_BTN = "Picture";
+        final String DIALOG_NEG_BTN = "Default";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("camera dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playScreenTransaction(0);
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                playScreenTransaction(-1);
+
+            }
+        });
+        dialogFragment.show(manager, "camera dialog");
     }
 
     @Override
@@ -260,14 +347,32 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
         if (mIsCharging) {
             calibrationScreenTransaction();
         } else {
-            FragmentManager manager = getFragmentManager();
-            Fragment fragment = manager.findFragmentByTag("dialog");
-            if (fragment != null) {
-                manager.beginTransaction().remove(fragment).commit();
-            }
-            DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
-            dialogFragment.show(manager, "dialog");
+            showPlayDialog();
         }
+    }
+
+    private void showPlayDialog() {
+        final String DIALOG_TITLE = "Not plugged in!";
+        final String DIALOG_DESCRIPTION = "This game is battery intensive, plug your phone to a power source";
+        final String DIALOG_POS_BTN = "Retry";
+        final String DIALOG_NEG_BTN = "Cancel";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("plug in dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playButtonPressed();
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                //Dismiss, nothing happen
+            }
+        });
+        dialogFragment.show(manager, "plug in dialog");
     }
 
     @Override
@@ -278,16 +383,6 @@ public class MainActivity extends AppCompatActivity implements DialogFragment.On
     @Override
     public void aboutButtonPressed() {
         aboutScreenTransaction();
-    }
-
-    @Override
-    public void onPositiveButtonPressed() {
-        playButtonPressed();
-    }
-
-    @Override
-    public void onNegativeButtonPressed() {
-        //Dismiss the dialog, nothing happen
     }
 
     private class BatteryMonitoringBroadcastReceiver extends BroadcastReceiver {

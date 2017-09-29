@@ -1,10 +1,8 @@
 package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,18 +94,20 @@ public class DialogFragment extends android.app.DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnDialogFragmentInteractionListener) {
-            mListener = (OnDialogFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void setListener (OnDialogFragmentInteractionListener context) {
+        if (context != null) {
+            mListener = context;
+        } else {
+            throw new RuntimeException("must implement OnFragmentInteractionListener");
+        }
     }
 
     public interface OnDialogFragmentInteractionListener {

@@ -1,5 +1,7 @@
 package com.example.bamboo.demoweek1.view.fragment;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,21 +19,28 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 public class CalibrationFragment extends android.app.Fragment {
+    private static final int WAIT_TIME_MILLISECONDS = 60000;
+
     private OnCalibrationFragmentInteractionListener mListener;
     private boolean mHeartMonitoring;
     private boolean mAirflowMonitoring;
     private boolean isCalled = false;
 
     private ImageButton btn;
+
     private LineGraphSeries<DataPoint> mSeries2;
     private double graph2LastXValue = 5d;
     private Runnable mTimer2;
     private final Handler mHandler = new Handler();
 
     private int mAirflowData = 0;
-    private int mPulseData = 0;
 
     private TextView mPulse;
+
+    private Button mButton;
+
+    private Runnable mCheckStatus;
+    private final Handler mCheckStatusHandler = new Handler();
 
     public CalibrationFragment() {
         // Required empty public constructor
@@ -69,7 +79,39 @@ public class CalibrationFragment extends android.app.Fragment {
         });
 
         mPulse = (TextView) v.findViewById(R.id.pulse_view);
+
+        mButton = (Button) v.findViewById(R.id.offline_btn);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: implement offline mode here
+            }
+        });
         return v;
+    }
+
+    private void showOfflineModeDialog () {
+        final String DIALOG_TITLE = "Use offline mode?";
+        final String DIALOG_DESCRIPTION = "It seems that calibration took too long, do you want to keep calibrating or use offline mode?";
+        final String DIALOG_POS_BTN = "Keep calibrating";
+        final String DIALOG_NEG_BTN = "Offline mode";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("offline mode dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                //TODO: implement offline mode here
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                //Dismiss, nothing happen
+            }
+        });
+        dialogFragment.show(manager, "offline mode dialog");
     }
 
     @Override
@@ -83,13 +125,6 @@ public class CalibrationFragment extends android.app.Fragment {
         }
     }
 
-//    //TODO: remember to delete this after testing
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        mListener.calibrate();
-//    }
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -99,6 +134,25 @@ public class CalibrationFragment extends android.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        //TODO: remember to delete this when finish testing
+//        mListener.calibrate();
+        //TODO: remember to delete this when finish testing
+        drawGraph();
+        checkStatus();
+    }
+
+    private void checkStatus() {
+        mCheckStatus = new Runnable() {
+            @Override
+            public void run(){
+                showOfflineModeDialog();
+                mCheckStatusHandler.postDelayed(this, WAIT_TIME_MILLISECONDS);
+            }
+        };
+        mCheckStatusHandler.postDelayed(mCheckStatus, WAIT_TIME_MILLISECONDS);
+    }
+
+    private void drawGraph() {
         mTimer2 = new Runnable() {
             @Override
             public void run(){
@@ -113,6 +167,7 @@ public class CalibrationFragment extends android.app.Fragment {
     @Override
     public void onPause() {
         mHandler.removeCallbacks(mTimer2);
+        mCheckStatusHandler.removeCallbacks(mCheckStatus);
         super.onPause();
     }
 

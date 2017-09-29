@@ -47,7 +47,7 @@
         android:id="@+id/gamename"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GAME NAME"
+        android:text="DON'T PANIC!"
         android:textSize="50sp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"

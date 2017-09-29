@@ -13,6 +13,56 @@
 
     <FrameLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:background="@drawable/custombackground"
+            android:orientation="vertical">
+            <com.jjoe64.graphview.GraphView
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:id="@+id/graph2" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+                <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/rhr_text"
+                    android:layout_marginStart="5dp"
+                    android:layout_alignParentStart="true"
+                    android:text="RHR: 0"/>
+                <FrameLayout
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/heartsignals">
+                    <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:id="@+id/heart_signals"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:textAlignment="center"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorAccent"
+                        android:text="0"/>
+                </FrameLayout>
+            </RelativeLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
         android:id="@+id/pauseview"

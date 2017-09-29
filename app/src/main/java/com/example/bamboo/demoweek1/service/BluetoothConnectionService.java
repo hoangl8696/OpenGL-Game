@@ -328,6 +328,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                     if (RESTING_HEART_BEAT == 0) {
                         RESTING_HEART_BEAT = Integer.parseInt(dataDict.get("1"));
                     }
+                    mActivity.setRestingPulse(RESTING_HEART_BEAT);
                     int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;
                     if (difference > 0) {
                         if ((int) Math.floor(Math.random() * 10 ) <= difference) {
@@ -480,5 +481,6 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
         void addObstacle();
         void pulseStreaming(int data);
         void airflowStreaming(int data);
+        void setRestingPulse(int data);
     }
 }

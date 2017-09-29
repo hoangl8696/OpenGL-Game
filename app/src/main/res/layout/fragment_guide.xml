@@ -72,7 +72,7 @@
             android:id="@+id/guide6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Make sure MySignals is in bluetooth \nmode before opening (game name)."
+            android:text="Make sure MySignals is in bluetooth \nmode before opening the game."
             android:textSize="25sp"
             android:gravity="center"
             android:layout_gravity="center"
