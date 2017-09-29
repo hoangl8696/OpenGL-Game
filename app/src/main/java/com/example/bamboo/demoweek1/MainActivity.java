@@ -1,5 +1,7 @@
 package com.example.bamboo.demoweek1;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -18,12 +20,18 @@ import android.widget.Toast;
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
 import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
 import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
+import com.example.bamboo.demoweek1.view.fragment.DialogFragment;
 import com.example.bamboo.demoweek1.view.fragment.GuideFragment;
 import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 
-public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements DialogFragment.OnDialogFragmentInteractionListener, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+    private static final String DIALOG_TITLE = "Not pluged in";
+    private static final String DIALOG_DESCRIPTION = "This game is battery intensive, please plug your phone to a power source";
+    private static final String DIALOG_POS_BTN = "Retry";
+    private static final String DIALOG_NEG_BTN = "Cancel";
+
     private BluetoothConnectionService mBluetoothService;
     private PlayFragment playFragment;
     private CalibrationFragment calibrationFragment;
@@ -252,7 +260,13 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         if (mIsCharging) {
             calibrationScreenTransaction();
         } else {
-            Toast.makeText(this, "Please plug your phone in", Toast.LENGTH_SHORT).show();
+            FragmentManager manager = getFragmentManager();
+            Fragment fragment = manager.findFragmentByTag("dialog");
+            if (fragment != null) {
+                manager.beginTransaction().remove(fragment).commit();
+            }
+            DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+            dialogFragment.show(manager, "dialog");
         }
     }
 
@@ -264,6 +278,16 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     @Override
     public void aboutButtonPressed() {
         aboutScreenTransaction();
+    }
+
+    @Override
+    public void onPositiveButtonPressed() {
+        playButtonPressed();
+    }
+
+    @Override
+    public void onNegativeButtonPressed() {
+        //Dismiss the dialog, nothing happen
     }
 
     private class BatteryMonitoringBroadcastReceiver extends BroadcastReceiver {
