@@ -85,6 +85,7 @@ public class CalibrationFragment extends android.app.Fragment {
             @Override
             public void onClick(View view) {
                 //TODO: implement offline mode here
+                mListener.calibrate(false);
             }
         });
         return v;
@@ -104,11 +105,11 @@ public class CalibrationFragment extends android.app.Fragment {
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
-                //TODO: implement offline mode here
+                //Dismiss, nothing happen
             }
             @Override
             public void onNegativeButtonPressed() {
-                //Dismiss, nothing happen
+                mListener.calibrate(false);
             }
         });
         dialogFragment.show(manager, "offline mode dialog");
@@ -177,7 +178,7 @@ public class CalibrationFragment extends android.app.Fragment {
         if (mAirflowMonitoring) {
             if (!isCalled) {
                 isCalled = true;
-                mListener.calibrate();
+                mListener.calibrate(true);
             }
         }
     }
@@ -187,7 +188,7 @@ public class CalibrationFragment extends android.app.Fragment {
         if (mHeartMonitoring) {
             if (!isCalled) {
                 isCalled = true;
-                mListener.calibrate();
+                mListener.calibrate(true);
             }
         }
     }
@@ -204,7 +205,7 @@ public class CalibrationFragment extends android.app.Fragment {
     }
 
     public interface OnCalibrationFragmentInteractionListener {
-        void calibrate();
+        void calibrate(boolean i);
         void calibrationBackPressed();
     }
 }

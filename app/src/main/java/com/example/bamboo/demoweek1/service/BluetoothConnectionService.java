@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
+
 public class BluetoothConnectionService extends Service implements BluetoothManagerHelperCallback, BluetoothManagerServicesCallback, BluetoothManagerCharacteristicsCallback, BluetoothManagerQueueCallback {
     private final IBinder mBinder = new LocalBinder();
 
@@ -311,28 +313,32 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
                 }
 
                 if (uuid.equals(StringConstants.kUUIDAirflowSensor)) {
-                    HashMap<String, String> dataDict = LBValueConverter.manageValueAirflow(value);
-                    Log.d("DEBUG", "kUUIDAirflowSensor dict: " + dataDict.get("1"));
-                    mActivity.airflowStreaming(Integer.parseInt(dataDict.get("1")));
-                    if (Integer.parseInt(dataDict.get("1") ) >= 100) {
-                        mActivity.goUp();
-                    } else {
-                        mActivity.goDown();
+                    if (!OFFLINE_FLAG) {
+                        HashMap<String, String> dataDict = LBValueConverter.manageValueAirflow(value);
+                        Log.d("DEBUG", "kUUIDAirflowSensor dict: " + dataDict.get("1"));
+                        mActivity.airflowStreaming(Integer.parseInt(dataDict.get("1")));
+                        if (Integer.parseInt(dataDict.get("1") ) >= 100) {
+                            mActivity.goUp();
+                        } else {
+                            mActivity.goDown();
+                        }
                     }
                 }
 
                 if (uuid.equals(StringConstants.kUUIDPulsiOximeterSensor) || uuid.equals(StringConstants.kUUIDPulsiOximeterBLESensor)) {
-                    HashMap<String, String> dataDict = LBValueConverter.manageValuePulsiOximeter(value);
-                    Log.d("DEBUG", "kUUIDPulsiOximeterSensor dict: " + dataDict.get("1"));
-                    mActivity.pulseStreaming(Integer.parseInt(dataDict.get("1")));
-                    if (RESTING_HEART_BEAT == 0) {
-                        RESTING_HEART_BEAT = Integer.parseInt(dataDict.get("1"));
-                    }
-                    mActivity.setRestingPulse(RESTING_HEART_BEAT);
-                    int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;
-                    if (difference > 0) {
-                        if ((int) Math.floor(Math.random() * 10 ) <= difference) {
-                            mActivity.addObstacle();
+                    if (!OFFLINE_FLAG) {
+                        HashMap<String, String> dataDict = LBValueConverter.manageValuePulsiOximeter(value);
+                        Log.d("DEBUG", "kUUIDPulsiOximeterSensor dict: " + dataDict.get("1"));
+                        mActivity.pulseStreaming(Integer.parseInt(dataDict.get("1")));
+                        if (RESTING_HEART_BEAT == 0) {
+                            RESTING_HEART_BEAT = Integer.parseInt(dataDict.get("1"));
+                        }
+                        mActivity.setRestingPulse(RESTING_HEART_BEAT);
+                        int difference = Integer.parseInt(dataDict.get("1")) - RESTING_HEART_BEAT;
+                        if (difference > 0) {
+                            if ((int) Math.floor(Math.random() * 10 ) <= difference) {
+                                mActivity.addObstacle();
+                            }
                         }
                     }
                 }

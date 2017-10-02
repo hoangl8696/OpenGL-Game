@@ -28,6 +28,7 @@ import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 
 public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+    public static boolean OFFLINE_FLAG = false;
 
     private BluetoothConnectionService mBluetoothService;
     private PlayFragment playFragment;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
-                MainActivity.super.onBackPressed();
+                finish();
             }
             @Override
             public void onNegativeButtonPressed() {
@@ -286,8 +287,38 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     }
 
     @Override
-    public void calibrate() {
-        showCameraDialog();
+    public void calibrate(boolean i) {
+        if (i) {
+            showCameraDialog();
+        } else {
+            showOfflineDialog();
+        }
+    }
+
+    private void showOfflineDialog() {
+        final String DIALOG_TITLE = "Offline mode";
+        final String DIALOG_DESCRIPTION = "Do you want to use offline mode?";
+        final String DIALOG_POS_BTN = "Yes";
+        final String DIALOG_NEG_BTN = "No";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("offline dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                showCameraDialog();
+                OFFLINE_FLAG = true;
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                //Dismiss, do nothing
+
+            }
+        });
+        dialogFragment.show(manager, "offline dialog");
     }
 
     @Override
@@ -303,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     }
 
     private void showCameraDialog() {
-        final String DIALOG_TITLE = "Signals calibrated!";
+        final String DIALOG_TITLE = "Game is ready!";
         final String DIALOG_DESCRIPTION = "Do you also want to take a picture, this will be used to customize your cube";
         final String DIALOG_POS_BTN = "Picture";
         final String DIALOG_NEG_BTN = "Default";

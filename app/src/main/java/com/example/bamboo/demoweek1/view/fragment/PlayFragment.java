@@ -29,6 +29,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 
 public class PlayFragment extends android.app.Fragment implements SensorEventListener{
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -39,6 +40,8 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     private ExtendGLSurfaceView mSurfaceView;
 
     private FrameLayout mFrameLayout;
+
+    private FrameLayout mContainer;
 
     private TextView mHeartSignals, mRhrText;
     private int mAirflowData = 0;
@@ -81,6 +84,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         View v = inflater.inflate(R.layout.fragment_play, container, false);
         mSurfaceView = (ExtendGLSurfaceView) v.findViewById(R.id.glsurfaceview);
         mFrameLayout = (FrameLayout) v.findViewById(R.id.pauseview);
+        mContainer = (FrameLayout) v.findViewById(R.id.live_data_container);
         mSensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         mGameRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         mHeartSignals = (TextView) v.findViewById(R.id.heart_signals);
@@ -97,6 +101,9 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         graph2.getViewport().setMinX(0);
         graph2.getViewport().setMaxX(40);
         graph2.getGridLabelRenderer().setTextSize(0.0f);
+        if (OFFLINE_FLAG) {
+            mContainer.setVisibility(View.GONE);
+        }
         return v;
     }
 

@@ -6,6 +6,8 @@ import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
+
 public class ExtendGLSurfaceView extends GLSurfaceView {
     private ExtendRenderer mRenderer;
     private Context mContext;
@@ -24,16 +26,19 @@ public class ExtendGLSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                mRenderer.goDown();
-                mRenderer.addObstacle();
-                break;
-            case MotionEvent.ACTION_DOWN:
-                mRenderer.goUp();
-                break;
+        if (OFFLINE_FLAG) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_UP:
+                    mRenderer.goDown();
+                    mRenderer.addObstacle();
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    mRenderer.goUp();
+                    break;
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     public void goUp() {
