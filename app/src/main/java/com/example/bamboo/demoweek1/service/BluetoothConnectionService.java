@@ -38,7 +38,7 @@ import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 public class BluetoothConnectionService extends Service implements BluetoothManagerHelperCallback, BluetoothManagerServicesCallback, BluetoothManagerCharacteristicsCallback, BluetoothManagerQueueCallback {
     private final IBinder mBinder = new LocalBinder();
 
-    private static String kMySignalsId = "mysignals 000062"; // MySignals advertising name
+    public static String kMySignalsId = "mysignals 000062";
     private static int RESTING_HEART_BEAT = 0;
 
     private static BluetoothManagerService mService = null;

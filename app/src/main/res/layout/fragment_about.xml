@@ -18,17 +18,12 @@
             android:layout_height="wrap_content"
             android:text="ABOUT US"
             android:textSize="45sp"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="1.7"
+            android:shadowRadius="1.8"
             android:textColor="@android:color/white"
             android:layout_gravity="center" />
-
-        <com.example.bamboo.demoweek1.view.extended.ExtendTextView
-            android:id="@+id/gamename2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="DON'T PANIC"
-            android:textSize="35sp"
-            android:textColor="@color/colorAccent"
-            android:layout_gravity="center"/>
 
         <com.example.bamboo.demoweek1.view.extended.ExtendTextView
             android:id="@+id/textView5"

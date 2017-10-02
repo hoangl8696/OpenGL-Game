@@ -84,7 +84,6 @@ public class CalibrationFragment extends android.app.Fragment {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: implement offline mode here
                 mListener.calibrate(false);
             }
         });
@@ -135,9 +134,6 @@ public class CalibrationFragment extends android.app.Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //TODO: remember to delete this when finish testing
-//        mListener.calibrate();
-        //TODO: remember to delete this when finish testing
         drawGraph();
         checkStatus();
     }
@@ -195,7 +191,7 @@ public class CalibrationFragment extends android.app.Fragment {
 
     public void heartData (int data) {
         if (mPulse != null) {
-            mPulse.setText("Pulse: "+Integer.toString(data));
+            mPulse.setText("Pulse: "+Integer.toString(data)+" Bpm");
         }
     }
 

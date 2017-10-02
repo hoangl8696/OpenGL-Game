@@ -3,6 +3,7 @@ package com.example.bamboo.demoweek1;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -296,8 +297,8 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     }
 
     private void showOfflineDialog() {
-        final String DIALOG_TITLE = "Offline mode";
-        final String DIALOG_DESCRIPTION = "Do you want to use offline mode?";
+        final String DIALOG_TITLE = "Offline mode!";
+        final String DIALOG_DESCRIPTION = "Do you want to use offline mode? You don't need to be plugged in";
         final String DIALOG_POS_BTN = "Yes";
         final String DIALOG_NEG_BTN = "No";
         FragmentManager manager = getFragmentManager();
@@ -314,8 +315,12 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
             }
             @Override
             public void onNegativeButtonPressed() {
-                //Dismiss, do nothing
-
+                OFFLINE_FLAG = false;
+                if (mIsCharging) {
+                    calibrationScreenTransaction();
+                } else {
+                    showPlayDialog();
+                }
             }
         });
         dialogFragment.show(manager, "offline dialog");
@@ -375,11 +380,7 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
 
     @Override
     public void playButtonPressed() {
-        if (mIsCharging) {
-            calibrationScreenTransaction();
-        } else {
-            showPlayDialog();
-        }
+        showOfflineDialog();
     }
 
     private void showPlayDialog() {
