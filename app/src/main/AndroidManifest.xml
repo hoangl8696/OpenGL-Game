@@ -37,12 +37,23 @@
         <service
             android:name=".service.BluetoothConnectionService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name=".service.BluetoothConnectionService.BIND" />
 
-        <receiver
-            android:name=".breceiver.DockingReceiver"
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.SoundService"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true">
+            <intent-filter>
+                <action android:name=".service.SoundService.BIND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

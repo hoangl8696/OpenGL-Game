@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center|top"
             android:textSize="15sp"
-            android:text="Estimated: 1 minute"/>
+            android:text="Estimated: 1 minute\nTake deep breaths"/>
 
     </LinearLayout>
 

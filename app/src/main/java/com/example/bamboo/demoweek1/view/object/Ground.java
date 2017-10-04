@@ -2,6 +2,7 @@ package com.example.bamboo.demoweek1.view.object;
 
 import android.opengl.GLES20;
 
+import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 
 import java.nio.ByteBuffer;
@@ -117,7 +118,7 @@ public class Ground implements ExtendRenderer.DrawObject {
     }
 
     @Override
-    public void draw(float[] matrix, boolean behaviour) {
+    public void draw(float[] matrix, boolean behaviour, SoundInterface context) {
         GLES20.glUseProgram(mProgram);
 
         translateX = 0.0f;

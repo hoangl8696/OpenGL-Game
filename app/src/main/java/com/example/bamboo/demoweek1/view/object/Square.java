@@ -2,6 +2,7 @@ package com.example.bamboo.demoweek1.view.object;
 
 import android.opengl.GLES20;
 
+import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 
 import java.nio.ByteBuffer;
@@ -13,6 +14,9 @@ public class Square implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;
     static final int TEXTURE_COORDS_DATA_SIZE = 2;
+    private static boolean LAND_FLAG = false;
+
+    private long mLastClickTime;
 
     private FloatBuffer mVertexBuffer;
     private ShortBuffer mDrawOrderBuffer;
@@ -160,16 +164,35 @@ public class Square implements ExtendRenderer.DrawObject {
     }
 
     @Override
-    public void draw(float[] matrix, boolean behaviour) {
+    public void draw(float[] matrix, boolean behaviour, SoundInterface context) {
         GLES20.glUseProgram(mProgram);
 
         if (behaviour) {
             if (jump < 1.5) {
                 jump += mGrace;
+                if (context != null) {
+                    long lastClickTime = mLastClickTime;
+                    long now = System.currentTimeMillis();
+                    mLastClickTime = now;
+                    if (now - lastClickTime < 100) {
+                        // Too fast: ignore
+                    } else {
+                        // Register the click
+                        context.playJump();
+                        LAND_FLAG = false;
+                    }
+                }
             }
         } else {
             if (jump > 0) {
                 jump -= mGrace;
+            } else {
+                if (context != null) {
+                    if (!LAND_FLAG) {
+                        context.playLand();
+                        LAND_FLAG = true;
+                    }
+                }
             }
         }
 

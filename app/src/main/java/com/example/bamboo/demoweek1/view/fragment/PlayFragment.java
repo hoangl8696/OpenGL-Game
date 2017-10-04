@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
+import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendGLSurfaceView;
 import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 import com.jjoe64.graphview.GraphView;
@@ -57,6 +58,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     private final float[] mRotationMatrix = new float[9];
     private final float[] mOrientationAngles = new float[3];
     private OnPlayFragmentInteractionListener mListener;
+    private SoundInterface mActivity;
 
     public PlayFragment() {
         // Required empty public constructor
@@ -104,6 +106,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         if (OFFLINE_FLAG) {
             mContainer.setVisibility(View.GONE);
         }
+        mSurfaceView.setSoundInterface(mActivity);
         return v;
     }
 
@@ -116,6 +119,12 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         super.onAttach(context);
         if (context instanceof OnPlayFragmentInteractionListener) {
             mListener = (OnPlayFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+        if (context instanceof SoundInterface) {
+            mActivity = (SoundInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");

@@ -9,6 +9,7 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.object.Ground;
 import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.ObstacleTriangle;
@@ -23,9 +24,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class ExtendRenderer implements GLSurfaceView.Renderer {
-    private Context mContext;
+    private SoundInterface mContext;
 
     private DrawObject mSquare, mGround;
+
+    private long mLastClickTime;
 
     private boolean isTriangleObstacle = true;
 
@@ -86,8 +89,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         Matrix.setLookAtM(mViewMatrix, 0,0,0,3, 0f,0f,0f,0f, 1f,0f);
         Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
-        mSquare.draw(mMVPMatrix, isJumping);
-        mGround.draw(mMVPMatrix, false);
+        mSquare.draw(mMVPMatrix, isJumping, mContext);
+        mGround.draw(mMVPMatrix, false, null);
 
         if (isObstacle) {
             if (isTriangleObstacle) {
@@ -102,10 +105,19 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
             if (list.get(i).canRemove()) {
                 list.remove(i);
             } else {
-                list.get(i).draw(mMVPMatrix, true);
+                list.get(i).draw(mMVPMatrix, true, null);
                 if (collisionCheck(mSquare, list.get(i))) {
                     Log.d("Collision", "true");
-                    ExtendGLSurfaceView.vibrate(100);
+                    mContext.playCollide();
+                    long lastClickTime = mLastClickTime;
+                    long now = System.currentTimeMillis();
+                    mLastClickTime = now;
+                    if (now - lastClickTime < 100) {
+                        // Too fast: ignore
+                    } else {
+                        // Register the click
+                        ExtendGLSurfaceView.vibrate(50);
+                    }
                 }
             }
         }
@@ -129,8 +141,10 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
                 && ( Math.abs( o1.getCenterY() - o2.getCenterY() ) < o1.getHeight() + o2.getHeight() );
     }
 
-    public void setContext (Context context) {
-        mContext = context;
+    public void setContext (SoundInterface context) {
+        if (context != null) {
+            mContext = context;
+        }
     }
 
     public static int loadTexture (Bitmap data) {
@@ -159,7 +173,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     }
 
     public interface DrawObject {
-        void draw (float[] matrix, boolean behaviour);
+        void draw (float[] matrix, boolean behaviour, SoundInterface context);
         boolean canRemove();
         float getWidth();
         float getHeight();

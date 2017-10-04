@@ -15,6 +15,7 @@ import android.os.Message;
 import android.support.annotation.IntDef;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.bamboo.demoweek1.MainActivity;
 import com.libelium.mysignalsconnectkit.BluetoothManagerHelper;
@@ -459,9 +460,11 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
             }
         };
 
-        if (mService.connectToDevice(selectedDevice, this)) {
-            Log.d("DEBUG", "Device connected!!");
-            handler.postDelayed(postExecution, 2000);
+        if (mService != null) {
+            if (mService.connectToDevice(selectedDevice, this)) {
+                Log.d("DEBUG", "Device connected!!");
+                handler.postDelayed(postExecution, 2000);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.bamboo.demoweek1;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -7,18 +8,24 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
+import com.example.bamboo.demoweek1.service.SoundService;
+import com.example.bamboo.demoweek1.view.extended.ExtendButton;
 import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
 import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
@@ -27,11 +34,18 @@ import com.example.bamboo.demoweek1.view.fragment.GuideFragment;
 import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
+import static com.example.bamboo.demoweek1.service.BluetoothConnectionService.kMySignalsId;
 
-public class MainActivity extends AppCompatActivity implements AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+
+public class MainActivity extends AppCompatActivity implements SoundInterface, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     public static boolean OFFLINE_FLAG = false;
+    private static boolean JUMP_FLAG = false;
+    public static final String NEW_AUDIO = "com.example.bamboo.demoweek1.NewAudio";
+
+    private long mLastClickTime;
 
     private BluetoothConnectionService mBluetoothService;
+    private SoundService mSoundService;
     private PlayFragment playFragment;
     private CalibrationFragment calibrationFragment;
     private GuideFragment guideFragment;
@@ -41,26 +55,15 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     private BatteryMonitoringBroadcastReceiver mReceiver;
 
     private boolean mBound = false;
+    private boolean mSoundBound = false;
     private boolean mIsBRRegistered = false;
     private boolean mIsCharging = false;
 
     private boolean mIsPlaying = false;
 
-    private ServiceConnection mConnection =  new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            BluetoothConnectionService.LocalBinder binder = (BluetoothConnectionService.LocalBinder) iBinder;
-            mBluetoothService = binder.getInstance();
-            mBound = true;
-            up = 0;
-            mBluetoothService.setClient(MainActivity.this);
-        }
+    private ServiceConnection mConnection;
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBound = false;
-        }
-    };
+    private ServiceConnection mSoundConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,48 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         setContentView(R.layout.activity_main);
         menuScreenTransaction();
         setUpBR();
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                BluetoothConnectionService.LocalBinder binder = (BluetoothConnectionService.LocalBinder) iBinder;
+                mBluetoothService = binder.getInstance();
+                mBound = true;
+                up = 0;
+                mBluetoothService.setClient(MainActivity.this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mBound = false;
+            }
+        };
+
+        mSoundConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                SoundService.LocalBinder binder = (SoundService.LocalBinder) iBinder;
+                mSoundService = binder.getService();
+                mSoundBound = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mSoundBound = false;
+            }
+        };
+    }
+
+    public void playAudio (String path) {
+        if (!mSoundBound) {
+            Intent playIntent = new Intent (this, SoundService.class);
+            playIntent.putExtra("media", path);
+            startService(playIntent);
+            bindService(playIntent, mSoundConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            Intent newSoundIntent = new Intent (NEW_AUDIO);
+            newSoundIntent.putExtra("media", path);
+            sendBroadcast(newSoundIntent);
+        }
     }
 
     private void setUpBR () {
@@ -118,11 +163,13 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
+                playAudio("buttonpress");
                 finish();
             }
             @Override
             public void onNegativeButtonPressed() {
                 //Dismiss, nothing happen
+                playAudio("buttonpress");
             }
         });
         dialogFragment.show(manager, "exit dialog");
@@ -220,29 +267,57 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
     protected void onPause() {
         super.onPause();
         unregisterBR();
+        pauseService();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         registerBR();
-        Intent intent = new Intent(this, BluetoothConnectionService.class);
-        startService(intent);
+        resumeService();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("Service state", mBound);
+        outState.putBoolean("Sound Service state", mSoundBound);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mBound = savedInstanceState.getBoolean("Service state");
+        mSoundBound = savedInstanceState.getBoolean("Sound Service state");
+    }
+
+    private void startService() {
+        if (!mBound) {
+            Intent intent = new Intent(this, BluetoothConnectionService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            startService(intent);
+            Log.d("DEBUG", "bind" + mBound);
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, BluetoothConnectionService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
+            mBluetoothService = null;
+            Log.d("DEBUG", "unbind" + mBound);
+        }
+        if (mSoundBound) {
+            unbindService(mSoundConnection);
+            mSoundService.stopSelf();
         }
     }
 
@@ -256,13 +331,19 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         }
         if (playFragment != null) {
             playFragment.goUp();
+            if (!JUMP_FLAG) {
+                playAudio("jump");
+                JUMP_FLAG = true;
+            }
         }
     }
 
     @Override
     public void goDown() {
         if (playFragment != null) {
+            if (JUMP_FLAG)
             playFragment.goDown();
+            JUMP_FLAG = false;
         }
     }
 
@@ -312,11 +393,14 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
             public void onPositiveButtonPressed() {
                 showCameraDialog();
                 OFFLINE_FLAG = true;
+                playAudio("buttonpress");
             }
             @Override
             public void onNegativeButtonPressed() {
                 OFFLINE_FLAG = false;
+                playAudio("buttonpress");
                 if (mIsCharging) {
+                    startService();
                     calibrationScreenTransaction();
                 } else {
                     showPlayDialog();
@@ -353,11 +437,12 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
             @Override
             public void onPositiveButtonPressed() {
                 playScreenTransaction(0);
+                playAudio("buttonpress");
             }
             @Override
             public void onNegativeButtonPressed() {
                 playScreenTransaction(-1);
-
+                playAudio("buttonpress");
             }
         });
         dialogFragment.show(manager, "camera dialog");
@@ -365,21 +450,25 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
 
     @Override
     public void calibrationBackPressed() {
+        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void aboutBackPressed() {
+        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void guideBackPressed() {
+        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void playButtonPressed() {
+        playAudio("buttonpress");
         showOfflineDialog();
     }
 
@@ -397,11 +486,13 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
+                playAudio("buttonpress");
                 playButtonPressed();
             }
             @Override
             public void onNegativeButtonPressed() {
                 //Dismiss, nothing happen
+                playAudio("buttonpress");
             }
         });
         dialogFragment.show(manager, "plug in dialog");
@@ -409,12 +500,42 @@ public class MainActivity extends AppCompatActivity implements AboutFragment.OnA
 
     @Override
     public void guideButtonPressed() {
+        playAudio("buttonpress");
         guideScreenTransaction();
     }
 
     @Override
     public void aboutButtonPressed() {
+        playAudio("buttonpress");
         aboutScreenTransaction();
+    }
+
+    @Override
+    public void playJump() {
+        playAudio("jump");
+    }
+
+    @Override
+    public void playLand() {
+        playAudio("landing");
+    }
+
+    @Override
+    public void playClick() {
+        playAudio("buttonpress");
+    }
+
+    @Override
+    public void playCollide() {
+        long lastClickTime = mLastClickTime;
+        long now = System.currentTimeMillis();
+        mLastClickTime = now;
+        if (now - lastClickTime < 100) {
+            // Too fast: ignore
+        } else {
+            // Register the click
+            playAudio("collide");
+        }
     }
 
     private class BatteryMonitoringBroadcastReceiver extends BroadcastReceiver {

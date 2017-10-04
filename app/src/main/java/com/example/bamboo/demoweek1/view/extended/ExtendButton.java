@@ -1,10 +1,19 @@
 package com.example.bamboo.demoweek1.view.extended;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.View;
+
+import com.example.bamboo.demoweek1.MainActivity;
+import com.example.bamboo.demoweek1.SoundInterface;
+
+import java.lang.ref.WeakReference;
 
 public class ExtendButton extends android.support.v7.widget.AppCompatButton {
+
     public ExtendButton(Context context) {
         super(context);
         setUp();

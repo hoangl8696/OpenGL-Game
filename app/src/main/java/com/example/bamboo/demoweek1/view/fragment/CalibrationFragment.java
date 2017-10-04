@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
+import com.example.bamboo.demoweek1.SoundInterface;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -22,6 +23,7 @@ public class CalibrationFragment extends android.app.Fragment {
     private static final int WAIT_TIME_MILLISECONDS = 60000;
 
     private OnCalibrationFragmentInteractionListener mListener;
+    private SoundInterface mActivity;
     private boolean mHeartMonitoring;
     private boolean mAirflowMonitoring;
     private boolean isCalled = false;
@@ -75,6 +77,7 @@ public class CalibrationFragment extends android.app.Fragment {
             @Override
             public void onClick(View view) {
                 mListener.calibrationBackPressed();
+                mActivity.playClick();
             }
         });
 
@@ -85,6 +88,7 @@ public class CalibrationFragment extends android.app.Fragment {
             @Override
             public void onClick(View view) {
                 mListener.calibrate(false);
+                mActivity.playClick();
             }
         });
         return v;
@@ -105,9 +109,11 @@ public class CalibrationFragment extends android.app.Fragment {
             @Override
             public void onPositiveButtonPressed() {
                 //Dismiss, nothing happen
+                mActivity.playClick();
             }
             @Override
             public void onNegativeButtonPressed() {
+                mActivity.playClick();
                 mListener.calibrate(false);
             }
         });
@@ -119,6 +125,12 @@ public class CalibrationFragment extends android.app.Fragment {
         super.onAttach(context);
         if (context instanceof OnCalibrationFragmentInteractionListener) {
             mListener = (OnCalibrationFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+        if (context instanceof SoundInterface) {
+            mActivity = (SoundInterface) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
