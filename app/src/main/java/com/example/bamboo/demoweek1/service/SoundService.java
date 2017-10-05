@@ -107,13 +107,13 @@ public class SoundService extends Service implements MediaPlayer.OnCompletionLis
         mPlayer = new MediaPlayer();
         switch (mMediaPath) {
             case "android.resource://com.example.bamboo.demoweek1/raw/buttonpress":
-                mPlayer.setVolume(0.5f,0.5f);
+                mPlayer.setVolume(0.25f,0.25f);
                 break;
             case "android.resource://com.example.bamboo.demoweek1/raw/collide":
                 mPlayer.setVolume(1.0f,1.0f);
                 break;
             case "android.resource://com.example.bamboo.demoweek1/raw/jump":
-                mPlayer.setVolume(0.25f,0.25f);
+                mPlayer.setVolume(0.15f,0.15f);
                 break;
             case "android.resource://com.example.bamboo.demoweek1/raw/landing":
                 mPlayer.setVolume(1.0f,1.0f);

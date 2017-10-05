@@ -1,18 +1,15 @@
 package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
 import com.example.bamboo.demoweek1.SoundInterface;
-import com.example.bamboo.demoweek1.service.SoundService;
 import com.example.bamboo.demoweek1.view.extended.ExtendButton;
+import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
 public class MenuScreenFragment extends android.app.Fragment {
 
@@ -41,21 +38,24 @@ public class MenuScreenFragment extends android.app.Fragment {
         mPlay = (ExtendButton) v.findViewById(R.id.play);
         mAbout = (ExtendButton) v.findViewById(R.id.about);
         mGuide = (ExtendButton) v.findViewById(R.id.tutorial);
-        mPlay.setOnClickListener(new View.OnClickListener() {
+        mPlay.setOnClickListener(new ExtendOnClickListener(mActivity) {
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.playButtonPressed();
             }
         });
-        mAbout.setOnClickListener(new View.OnClickListener() {
+        mAbout.setOnClickListener(new ExtendOnClickListener(mActivity) {
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.aboutButtonPressed();
             }
         });
-        mGuide.setOnClickListener(new View.OnClickListener() {
+        mGuide.setOnClickListener(new ExtendOnClickListener(mActivity){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.guideButtonPressed();
             }
         });

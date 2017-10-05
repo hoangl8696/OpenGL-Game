@@ -72,23 +72,27 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
         } catch (Exception e) {
 
         }
+        Log.d("lifecycle", "mservice created " + mService);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         scanBluetoothDevices();
         createInterface();
+        Log.d("service lifecycle: ", "on start command");
         return START_NOT_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d("lifecycle", "bind " + mBinder);
         return mBinder;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d("service lifecycle: ", "on destroy");
     }
 
     @Override
@@ -140,7 +144,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
 
     @Override
     public void onConnectedToDevice(BluetoothDevice device, int status) {
-        Log.d("DEBUG", "Device connected!!");
+        Log.d("lifecycle", "Device connected!!");
     }
 
     @Override
@@ -163,7 +167,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
 
     @Override
     public void onDisconnectFromDevice(BluetoothDevice device, int newState) {
-        Log.d("DEBUG", "Device disconnected!!");
+        Log.d("lifecycle", "Device disconnected!!");
     }
 
     @Override
@@ -367,6 +371,7 @@ public class BluetoothConnectionService extends Service implements BluetoothMana
         } catch (Exception e) {
 
         }
+        Log.d("lifecycle", "normally killed " + mService);
         return super.onUnbind(intent);
     }
 

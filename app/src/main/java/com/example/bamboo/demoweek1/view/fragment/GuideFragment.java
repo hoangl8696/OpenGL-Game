@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.example.bamboo.demoweek1.R;
+import com.example.bamboo.demoweek1.SoundInterface;
+import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
 public class GuideFragment extends android.app.Fragment {
     private ImageButton btn;
 
     private OnGuideFragmentInteractionListener mListener;
+    private SoundInterface mSound;
 
     public GuideFragment() {
         // Required empty public constructor
@@ -33,9 +36,10 @@ public class GuideFragment extends android.app.Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_guide, container, false);
         btn = (ImageButton) v.findViewById(R.id.back_buton);
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn.setOnClickListener(new ExtendOnClickListener(mSound){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.guideBackPressed();
             }
         });
@@ -50,6 +54,12 @@ public class GuideFragment extends android.app.Fragment {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+        if (context instanceof SoundInterface) {
+            mSound = (SoundInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement SoundInterface");
         }
     }
 

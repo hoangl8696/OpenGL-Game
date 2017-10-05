@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
 import com.example.bamboo.demoweek1.SoundInterface;
+import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -73,22 +74,22 @@ public class CalibrationFragment extends android.app.Fragment {
 
         // back button
         btn = (ImageButton) v.findViewById(R.id.back_button);
-        btn.setOnClickListener(new View.OnClickListener() {
+        btn.setOnClickListener(new ExtendOnClickListener(mActivity){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.calibrationBackPressed();
-                mActivity.playClick();
             }
         });
 
         mPulse = (TextView) v.findViewById(R.id.pulse_view);
 
         mButton = (Button) v.findViewById(R.id.offline_btn);
-        mButton.setOnClickListener(new View.OnClickListener() {
+        mButton.setOnClickListener(new ExtendOnClickListener(mActivity){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 mListener.calibrate(false);
-                mActivity.playClick();
             }
         });
         return v;
@@ -109,14 +110,12 @@ public class CalibrationFragment extends android.app.Fragment {
             @Override
             public void onPositiveButtonPressed() {
                 //Dismiss, nothing happen
-                mActivity.playClick();
             }
             @Override
             public void onNegativeButtonPressed() {
-                mActivity.playClick();
                 mListener.calibrate(false);
             }
-        });
+        }, mActivity);
         dialogFragment.show(manager, "offline mode dialog");
     }
 

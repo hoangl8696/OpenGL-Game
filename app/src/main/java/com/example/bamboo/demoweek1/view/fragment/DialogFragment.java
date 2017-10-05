@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
+import com.example.bamboo.demoweek1.SoundInterface;
+import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
 public class DialogFragment extends android.app.DialogFragment {
     private static final String TITLE = "title";
@@ -26,6 +28,7 @@ public class DialogFragment extends android.app.DialogFragment {
     private Button mPosBtn, mNegBtn;
 
     private OnDialogFragmentInteractionListener mListener;
+    private SoundInterface mSoundInterface;
 
     public DialogFragment() {
         // Required empty public constructor
@@ -67,18 +70,20 @@ public class DialogFragment extends android.app.DialogFragment {
         mDescriptionText = (TextView) view.findViewById(R.id.dialog_description);
         mNegBtn = (Button) view.findViewById(R.id.negative_btn);
         mPosBtn = (Button) view.findViewById(R.id.positive_btn);
-        mPosBtn.setOnClickListener(new View.OnClickListener() {
+        mPosBtn.setOnClickListener(new ExtendOnClickListener(mSoundInterface){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 if (mListener != null) {
                     dismiss();
                     mListener.onPositiveButtonPressed();
                 }
             }
         });
-        mNegBtn.setOnClickListener(new View.OnClickListener() {
+        mNegBtn.setOnClickListener(new ExtendOnClickListener(mSoundInterface){
             @Override
             public void onClick(View view) {
+                super.onClick(view);
                 if (mListener != null) {
                     dismiss();
                     mListener.onNegativeButtonPressed();
@@ -102,11 +107,16 @@ public class DialogFragment extends android.app.DialogFragment {
         mListener = null;
     }
 
-    public void setListener (OnDialogFragmentInteractionListener context) {
+    public void setListener (OnDialogFragmentInteractionListener context, SoundInterface sound) {
         if (context != null) {
             mListener = context;
         } else {
             throw new RuntimeException("must implement OnFragmentInteractionListener");
+        }
+        if (sound != null) {
+            mSoundInterface = sound;
+        } else {
+            throw new RuntimeException("must implement SoundInterface");
         }
     }
 

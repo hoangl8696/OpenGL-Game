@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
 
     private long mLastClickTime;
 
+    private Intent intent;
+
     private BluetoothConnectionService mBluetoothService;
     private SoundService mSoundService;
     private PlayFragment playFragment;
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("lifecycle", "on create");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
                 mBound = true;
                 up = 0;
                 mBluetoothService.setClient(MainActivity.this);
+                Log.d("lifecycle", "bind: " + binder);
+                Log.d("lifecycle", "bind: " + MainActivity.this);
             }
 
             @Override
@@ -163,15 +168,13 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
-                playAudio("buttonpress");
                 finish();
             }
             @Override
             public void onNegativeButtonPressed() {
                 //Dismiss, nothing happen
-                playAudio("buttonpress");
             }
-        });
+        }, MainActivity.this);
         dialogFragment.show(manager, "exit dialog");
     }
 
@@ -268,6 +271,7 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         super.onPause();
         unregisterBR();
         pauseService();
+        Log.d("lifecycle", "on pause");
 
     }
 
@@ -276,6 +280,7 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         super.onResume();
         registerBR();
         resumeService();
+        Log.d("lifecycle", "on ressume");
     }
 
     @Override
@@ -294,16 +299,16 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
 
     private void startService() {
         if (!mBound) {
-            Intent intent = new Intent(this, BluetoothConnectionService.class);
+            intent = new Intent(this, BluetoothConnectionService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
             startService(intent);
-            Log.d("DEBUG", "bind" + mBound);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("lifecycle", "on start");
     }
 
     @Override
@@ -313,12 +318,14 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
             unbindService(mConnection);
             mBound = false;
             mBluetoothService = null;
-            Log.d("DEBUG", "unbind" + mBound);
+            stopService(intent);
+            Log.d("lifecycle", "unbind" + mBound);
         }
         if (mSoundBound) {
             unbindService(mSoundConnection);
             mSoundService.stopSelf();
         }
+        Log.d("lifecycle", "on stop");
     }
 
     @Override
@@ -393,12 +400,10 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
             public void onPositiveButtonPressed() {
                 showCameraDialog();
                 OFFLINE_FLAG = true;
-                playAudio("buttonpress");
             }
             @Override
             public void onNegativeButtonPressed() {
                 OFFLINE_FLAG = false;
-                playAudio("buttonpress");
                 if (mIsCharging) {
                     startService();
                     calibrationScreenTransaction();
@@ -406,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
                     showPlayDialog();
                 }
             }
-        });
+        }, MainActivity.this);
         dialogFragment.show(manager, "offline dialog");
     }
 
@@ -437,38 +442,32 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
             @Override
             public void onPositiveButtonPressed() {
                 playScreenTransaction(0);
-                playAudio("buttonpress");
             }
             @Override
             public void onNegativeButtonPressed() {
                 playScreenTransaction(-1);
-                playAudio("buttonpress");
             }
-        });
+        }, MainActivity.this);
         dialogFragment.show(manager, "camera dialog");
     }
 
     @Override
     public void calibrationBackPressed() {
-        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void aboutBackPressed() {
-        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void guideBackPressed() {
-        playAudio("buttonpress");
         menuScreenTransaction();
     }
 
     @Override
     public void playButtonPressed() {
-        playAudio("buttonpress");
         showOfflineDialog();
     }
 
@@ -486,27 +485,23 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
             @Override
             public void onPositiveButtonPressed() {
-                playAudio("buttonpress");
                 playButtonPressed();
             }
             @Override
             public void onNegativeButtonPressed() {
                 //Dismiss, nothing happen
-                playAudio("buttonpress");
             }
-        });
+        }, MainActivity.this);
         dialogFragment.show(manager, "plug in dialog");
     }
 
     @Override
     public void guideButtonPressed() {
-        playAudio("buttonpress");
         guideScreenTransaction();
     }
 
     @Override
     public void aboutButtonPressed() {
-        playAudio("buttonpress");
         aboutScreenTransaction();
     }
 
