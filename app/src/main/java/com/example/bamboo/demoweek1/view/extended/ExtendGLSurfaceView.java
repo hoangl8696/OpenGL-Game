@@ -29,6 +29,7 @@ public class ExtendGLSurfaceView extends GLSurfaceView {
 
     public void setSoundInterface(SoundInterface activity) {
         mRenderer.setContext(activity);
+        mActivity = activity;
     }
 
 

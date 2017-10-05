@@ -43,8 +43,8 @@
                     android:layout_alignParentStart="true"
                     android:text="RHR: 0"/>
                 <FrameLayout
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:background="@drawable/heartsignals">
                     <com.example.bamboo.demoweek1.view.extended.ExtendTextView
@@ -54,8 +54,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
                         android:textAlignment="center"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorAccent"
+                        android:textSize="14sp"
+                        android:textColor="@android:color/white"
                         android:text="0"/>
                 </FrameLayout>
             </RelativeLayout>
