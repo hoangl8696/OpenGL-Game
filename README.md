@@ -22,22 +22,22 @@ A step by step series of examples that tell you have to get a development env ru
 Steps
 
 ```
-**Step 1.** Download or clone the repo to your working pc or laptop (https://github.com/hoangl8696/OpenGL-Game.).
+Step 1. Download or clone the repo to your working pc or laptop (https://github.com/hoangl8696/OpenGL-Game.).
 ```
 ```
-**Step 2.** Connect your android device to your working station.
+Step 2. Connect your android device to your working station.
 ```
 
 ```
-**Step 3.** If you have MySignals, you have to pair your phone with it via bluetooth.
+Step 3. If you have MySignals, you have to pair your phone with it via bluetooth.
 Connect your sensors first before connecting power to MySignals.
 ```
 ```
-**Step 4.** If you already paired, make sure MySignals and your phone are in bluetooth mode before starting the
+Step 4. If you already paired, make sure MySignals and your phone are in bluetooth mode before starting the
 application.
 ```
 ```
-**Step 5.** Hit "run app" in android studio and deploy on your phone. (An emulator won't work because of bluetooth)
+Step 5. Hit "run app" in android studio and deploy on your phone. (An emulator won't work because of bluetooth)
 ```
 
 End with an example of getting some data out of the system or using it for a little demo
