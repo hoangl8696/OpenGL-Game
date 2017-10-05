@@ -1,14 +1,14 @@
 # OpenGL-Game "Don't Panic!
 This is a game made to play with MySignals. MySignals is a development platform for medical devices and eHealth applications. It can connect to over 15 sensors. Main goal for this project was to control the movement of the player by using the MySignals airflow and SPO2 sensors.
 ## Team Members
-Olli Lehmusvuori @ollilehmusvuori.gmail.com
+Olli Lehmusvuori ollilehmusvuori.gmail.com
 
 Ly Hoang bambam861996@gmail.com
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 See deployment for notes on how to deploy the project on a live system.
 ### Prerequisites
-What things you need to install the software and how to install them
+Things you need to install the software
 ```
 You need an android device (5.0 ->) to develop and test this application !
 ```
@@ -17,7 +17,7 @@ You need an android device (5.0 ->) to develop and test this application !
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+Steps to get a development environment working
 
 Steps
 
@@ -40,7 +40,6 @@ application.
 Step 5. Hit "run app" in android studio and deploy on your phone. (An emulator won't work because of bluetooth)
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
