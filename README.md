@@ -1,5 +1,5 @@
 # OpenGL-Game "Don't Panic!
-This is a game made to play with MySignals. MySignals is a development platform for medical devices and eHealth applications. It can connect to over 15 sensors. Main goal for this project was to control the movement of the player by using the MySignals airflow and SPO2 sensors.
+This is a game made to play with MySignals's sensors. MySignals is a development platform for medical devices and eHealth applications. It can connect to over 15 sensors. Main goal for this project is to use the player's vital signal (airflow and pulse) to control the playing object.
 ## Team Members
 Olli Lehmusvuori ollilehmusvuori@gmail.com
 
