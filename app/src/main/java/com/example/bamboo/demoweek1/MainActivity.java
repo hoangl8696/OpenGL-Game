@@ -22,10 +22,11 @@ import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
 import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
 import com.example.bamboo.demoweek1.view.fragment.DialogFragment;
 import com.example.bamboo.demoweek1.view.fragment.GuideFragment;
+import com.example.bamboo.demoweek1.view.fragment.InstructionFragment;
 import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
-public class MainActivity extends AppCompatActivity implements SoundInterface, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements InstructionFragment.OnInstructionFragmentInteractionListener, SoundInterface, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     public static boolean OFFLINE_FLAG = false;
     private static boolean JUMP_FLAG = false;
     public static final String NEW_AUDIO = "com.example.bamboo.demoweek1.NewAudio";
@@ -40,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     private CalibrationFragment calibrationFragment;
     private GuideFragment guideFragment;
     private AboutFragment aboutFragment;
+    private InstructionFragment instructionFragment;
     private int up;
     private IntentFilter mFilter;
     private BatteryMonitoringBroadcastReceiver mReceiver;
@@ -193,6 +195,15 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         getSupportFragmentManager().executePendingTransactions();
     }
 
+    private void instructionScreenTransaction() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        instructionFragment = InstructionFragment.newInstance();
+        ft.replace(R.id.container, instructionFragment, "Instruciton Transaction");
+        ft.addToBackStack("Instruction Transaction");
+        ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
+    }
+
     private void playScreenTransaction(int isCamera) {
         mIsPlaying = true;
         if (isCamera == 0) {
@@ -304,7 +315,9 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         }
         if (mSoundBound) {
             unbindService(mSoundConnection);
+            mSoundBound = false;
             mSoundService.stopSelf();
+            mSoundService = null;
         }
     }
 
@@ -520,6 +533,11 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     }
 
     @Override
+    public void instructionButtonPressed() {
+        instructionScreenTransaction();
+    }
+
+    @Override
     public void playJump() {
         playAudio("jump");
     }
@@ -545,6 +563,11 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
             // Register the click
             playAudio("collide");
         }
+    }
+
+    @Override
+    public void instructionBackPressed() {
+        menuScreenTransaction();
     }
 
     private class BatteryMonitoringBroadcastReceiver extends BroadcastReceiver {

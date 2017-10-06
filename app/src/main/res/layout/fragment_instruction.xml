@@ -1,0 +1,120 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimaryDark"
+    tools:context="com.example.bamboo.demoweek1.view.fragment.InstructionFragment">
+
+    <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INSTRUCTION"
+        android:textSize="35sp"
+        android:textColor="@android:color/white"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="2"
+        android:shadowDy="1.7"
+        android:shadowRadius="1.8"
+        android:layout_gravity="center|top"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:elevation="1dp">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Offline mode:"
+                android:textSize="25sp"
+                android:gravity="left"
+                android:layout_gravity="center"
+                android:textColor="@color/colorAccent" />
+
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:text="OnTapScreen() {"
+                android:textSize="25sp"
+                android:gravity="left"
+                android:textColor="@color/colorAccent" />
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:text="  box.jump();\n}"
+                android:textSize="25sp"
+                android:gravity="left"
+                android:textColor="@color/colorAccent" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="60dp">
+
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Normal mode:"
+                android:textSize="25sp"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:textColor="@color/colorAccent" />
+
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OnInhale() {"
+                android:textSize="25sp"
+                android:gravity="left"
+                android:layout_marginStart="40dp"
+                android:textColor="@color/colorAccent" />
+            <com.example.bamboo.demoweek1.view.extended.ExtendTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  box.jump();\n}\n\nif (heartRate > Rhr) {\n   obstacles.generate();\n}"
+                android:textSize="25sp"
+                android:layout_marginStart="40dp"
+                android:gravity="left"
+                android:textColor="@color/colorAccent" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/back_buton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:elevation="1dp"
+        android:background="@drawable/backbutton1"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        android:layout_marginRight="8dp"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintHorizontal_bias="0.035"
+        app:layout_constraintVertical_bias="0.087" />
+
+    <ImageView
+        android:elevation="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/image2"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="236dp" />
+</FrameLayout>

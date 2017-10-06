@@ -1,7 +1,11 @@
 package com.example.bamboo.demoweek1.view.fragment;
 
 import android.content.Context;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +16,18 @@ import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
 //Olli
-public class GuideFragment extends android.app.Fragment {
+public class InstructionFragment extends android.app.Fragment {
     private ImageButton btn;
 
-    private OnGuideFragmentInteractionListener mListener;
     private SoundInterface mSound;
+    private OnInstructionFragmentInteractionListener mListener;
 
-    public GuideFragment() {
+    public InstructionFragment() {
         // Required empty public constructor
     }
 
-    public static GuideFragment newInstance() {
-        GuideFragment fragment = new GuideFragment();
+    public static InstructionFragment newInstance() {
+        InstructionFragment fragment = new InstructionFragment();
         return fragment;
     }
 
@@ -35,23 +39,28 @@ public class GuideFragment extends android.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_guide, container, false);
-        btn = (ImageButton) v.findViewById(R.id.back_buton);
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_instruction, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        btn = (ImageButton) view.findViewById(R.id.back_buton);
         btn.setOnClickListener(new ExtendOnClickListener(mSound){
             @Override
             public void onClick(View view) {
                 super.onClick(view);
-                mListener.guideBackPressed();
+                mListener.instructionBackPressed();
             }
         });
-        return v;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnGuideFragmentInteractionListener) {
-            mListener = (OnGuideFragmentInteractionListener) context;
+        if (context instanceof OnInstructionFragmentInteractionListener) {
+            mListener = (OnInstructionFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -60,7 +69,7 @@ public class GuideFragment extends android.app.Fragment {
             mSound = (SoundInterface) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement SoundInterface");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -71,7 +80,7 @@ public class GuideFragment extends android.app.Fragment {
         mSound = null;
     }
 
-    public interface OnGuideFragmentInteractionListener {
-        void guideBackPressed();
+    public interface OnInstructionFragmentInteractionListener {
+        void instructionBackPressed();
     }
 }

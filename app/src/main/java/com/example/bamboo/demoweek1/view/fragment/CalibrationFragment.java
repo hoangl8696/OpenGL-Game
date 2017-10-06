@@ -139,6 +139,7 @@ public class CalibrationFragment extends android.app.Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mActivity = null;
     }
 
     @Override

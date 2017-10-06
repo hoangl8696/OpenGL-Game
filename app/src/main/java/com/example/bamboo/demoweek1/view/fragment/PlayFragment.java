@@ -139,6 +139,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mActivity = null;
     }
 
     @Override

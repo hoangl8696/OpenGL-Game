@@ -16,7 +16,7 @@ public class MenuScreenFragment extends android.app.Fragment {
 
     private SoundInterface mActivity;
     private OnMenuFragmentInteractionListener mListener;
-    private ExtendButton mPlay, mAbout, mGuide;
+    private ExtendButton mPlay, mAbout, mGuide, mTutorial;
 
     public MenuScreenFragment() {
         // Required empty public constructor
@@ -39,6 +39,14 @@ public class MenuScreenFragment extends android.app.Fragment {
         mPlay = (ExtendButton) v.findViewById(R.id.play);
         mAbout = (ExtendButton) v.findViewById(R.id.about);
         mGuide = (ExtendButton) v.findViewById(R.id.tutorial);
+        mTutorial = (ExtendButton) v.findViewById(R.id.instruction);
+        mTutorial.setOnClickListener(new ExtendOnClickListener(mActivity) {
+            @Override
+            public void onClick(View view) {
+                super.onClick(view);
+                mListener.instructionButtonPressed();
+            }
+        });
         mPlay.setOnClickListener(new ExtendOnClickListener(mActivity) {
             @Override
             public void onClick(View view) {
@@ -91,5 +99,6 @@ public class MenuScreenFragment extends android.app.Fragment {
         void playButtonPressed();
         void guideButtonPressed();
         void aboutButtonPressed();
+        void instructionButtonPressed();
     }
 }

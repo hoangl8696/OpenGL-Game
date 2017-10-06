@@ -67,6 +67,7 @@ public class AboutFragment extends android.app.Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+        mSound = null;
     }
 
     public interface OnAboutFragmentInteractionListener {
