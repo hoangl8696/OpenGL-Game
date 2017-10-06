@@ -11,6 +11,7 @@ import com.example.bamboo.demoweek1.R;
 import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
+//Olli
 public class GuideFragment extends android.app.Fragment {
     private ImageButton btn;
 

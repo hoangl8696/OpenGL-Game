@@ -7,19 +7,22 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.example.bamboo.demoweek1.SoundInterface;
+import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 
 public class ExtendGLSurfaceView extends GLSurfaceView {
     private ExtendRenderer mRenderer;
-    private Context mContext;
+    private ExtendRenderer.HealthControl mContext;
     private SoundInterface mActivity;
     private static Vibrator v;
     private boolean JUMP_FLAG = false;
 
     public ExtendGLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
+        if (context instanceof ExtendRenderer.HealthControl) {
+            mContext = (ExtendRenderer.HealthControl) context;
+        }
         setEGLContextClientVersion(2);
         mRenderer = new ExtendRenderer();
         setRenderer(mRenderer);
@@ -32,6 +35,9 @@ public class ExtendGLSurfaceView extends GLSurfaceView {
         mActivity = activity;
     }
 
+    public void setHealthController (ExtendRenderer.HealthControl context) {
+        mRenderer.setHealthControl(context);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

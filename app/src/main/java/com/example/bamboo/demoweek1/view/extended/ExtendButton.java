@@ -12,6 +12,7 @@ import com.example.bamboo.demoweek1.SoundInterface;
 
 import java.lang.ref.WeakReference;
 
+//Olli
 public class ExtendButton extends android.support.v7.widget.AppCompatButton {
 
     public ExtendButton(Context context) {

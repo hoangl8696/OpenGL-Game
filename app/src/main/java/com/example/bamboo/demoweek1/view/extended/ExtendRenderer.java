@@ -10,6 +10,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.example.bamboo.demoweek1.SoundInterface;
+import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 import com.example.bamboo.demoweek1.view.object.Ground;
 import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.ObstacleTriangle;
@@ -25,10 +26,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class ExtendRenderer implements GLSurfaceView.Renderer {
     private SoundInterface mContext;
+    private HealthControl mHealthControl;
 
     private DrawObject mSquare, mGround;
 
     private long mLastClickTime;
+    private long mLastClickTime2;
 
     private boolean isTriangleObstacle = true;
 
@@ -46,7 +49,9 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     private static Bitmap mRawData;
 
     public static void setRawData(Bitmap data) {
-        ExtendRenderer.mRawData = data;
+        if (ExtendRenderer.mRawData == null) {
+            ExtendRenderer.mRawData = data;
+        }
     }
 
     private ScheduledThreadPoolExecutor mExecutor;
@@ -117,6 +122,7 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
                     } else {
                         // Register the click
                         ExtendGLSurfaceView.vibrate(50);
+                        mHealthControl.decrease();
                     }
                 }
             }
@@ -132,8 +138,16 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     }
 
     public void addObstacle() {
-        isObstacle = true;
-        Log.d("New obj", Integer.toString(list.size()));
+        long lastClickTime = mLastClickTime2;
+        long now = System.currentTimeMillis();
+        mLastClickTime2 = now;
+        if (now - lastClickTime < 500) {
+            // Too fast: ignore
+        } else {
+            // Register
+            isObstacle = true;
+            Log.d("New obj", Integer.toString(list.size()));
+        }
     }
 
     public boolean collisionCheck(DrawObject o1, DrawObject o2) {
@@ -144,6 +158,12 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
     public void setContext (SoundInterface context) {
         if (context != null) {
             mContext = context;
+        }
+    }
+
+    public void setHealthControl (HealthControl context) {
+        if (context != null) {
+            mHealthControl = context;
         }
     }
 
@@ -179,5 +199,9 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         float getHeight();
         float getCenterX();
         float getCenterY();
+    }
+
+    public interface HealthControl {
+        void decrease();
     }
 }

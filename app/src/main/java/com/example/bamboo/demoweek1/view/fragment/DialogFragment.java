@@ -59,6 +59,7 @@ public class DialogFragment extends android.app.DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        getDialog().setCanceledOnTouchOutside(false);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_dialog, container, false);
     }
@@ -119,6 +120,8 @@ public class DialogFragment extends android.app.DialogFragment {
             throw new RuntimeException("must implement SoundInterface");
         }
     }
+
+
 
     public interface OnDialogFragmentInteractionListener {
         void onPositiveButtonPressed();

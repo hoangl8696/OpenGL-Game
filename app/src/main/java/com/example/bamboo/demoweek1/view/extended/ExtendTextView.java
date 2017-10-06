@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 
-
+//Olli
 public class ExtendTextView extends android.support.v7.widget.AppCompatTextView {
     public ExtendTextView(Context context) {
         super(context);

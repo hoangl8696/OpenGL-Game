@@ -376,6 +376,40 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     }
 
     @Override
+    public void youDie() {
+        showDieDialog();
+    }
+
+    @Override
+    public void restartService() {
+        startService();
+    }
+
+    private void showDieDialog() {
+        final String DIALOG_TITLE = "You Die!";
+        final String DIALOG_DESCRIPTION = "Do you want to retry or exit the game?";
+        final String DIALOG_POS_BTN = "Retry";
+        final String DIALOG_NEG_BTN = "Exit";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("die dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playScreenTransaction(-1);
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                finish();
+            }
+        }, MainActivity.this);
+        dialogFragment.show(manager, "die dialog");
+    }
+
+    @Override
     public void calibrate(boolean i) {
         if (i) {
             showCameraDialog();

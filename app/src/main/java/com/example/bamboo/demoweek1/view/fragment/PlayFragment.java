@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.bamboo.demoweek1.R;
@@ -32,9 +33,11 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import static android.content.Context.SENSOR_SERVICE;
 import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 
-public class PlayFragment extends android.app.Fragment implements SensorEventListener{
+public class PlayFragment extends android.app.Fragment implements SensorEventListener, ExtendRenderer.HealthControl {
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String CAMERA_REQUEST = "camera";
+
+    public static float mHealthValue = 5;
 
     private boolean mIsCamera;
 
@@ -43,6 +46,8 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     private FrameLayout mFrameLayout;
 
     private FrameLayout mContainer;
+
+    private RatingBar mHealth;
 
     private TextView mHeartSignals, mRhrText;
     private int mAirflowData = 0;
@@ -91,6 +96,9 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         mGameRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         mHeartSignals = (TextView) v.findViewById(R.id.heart_signals);
         mRhrText = (TextView) v.findViewById(R.id.rhr_text);
+        mHealth = (RatingBar) v.findViewById(R.id.health_bar);
+        mHealthValue = 5;
+        mHealth.setRating(mHealthValue);
         if (mIsCamera) {
             delegateCamera();
         } else {
@@ -107,6 +115,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
             mContainer.setVisibility(View.GONE);
         }
         mSurfaceView.setSoundInterface(mActivity);
+        mSurfaceView.setHealthController(this);
         return v;
     }
 
@@ -141,6 +150,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
+                mListener.restartService();
                 if (data != null) {
                     Bundle extra = data.getExtras();
                     Bitmap bitmap = (Bitmap) extra.get("data");
@@ -239,8 +249,22 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         }
     }
 
+    public void decrease() {
+        mHealthValue = mHealthValue - 0.5f;
+        if (mHealthValue != 0) {
+            if (mHealth != null) {
+                mHealth.setRating(mHealthValue);
+            }
+        } else {
+            mHealth.setRating(mHealthValue);
+            mListener.youDie();
+        }
+    }
+
     public interface OnPlayFragmentInteractionListener {
         void pauseService();
         void resumeService();
+        void youDie();
+        void restartService();
     }
 }
