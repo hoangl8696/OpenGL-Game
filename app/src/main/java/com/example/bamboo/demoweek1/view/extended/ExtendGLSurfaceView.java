@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import com.example.bamboo.demoweek1.SoundInterface;
-import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 

@@ -1,41 +1,29 @@
 package com.example.bamboo.demoweek1;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.bamboo.demoweek1.service.BluetoothConnectionService;
 import com.example.bamboo.demoweek1.service.SoundService;
-import com.example.bamboo.demoweek1.view.extended.ExtendButton;
-import com.example.bamboo.demoweek1.view.extended.ExtendRenderer;
 import com.example.bamboo.demoweek1.view.fragment.AboutFragment;
 import com.example.bamboo.demoweek1.view.fragment.CalibrationFragment;
 import com.example.bamboo.demoweek1.view.fragment.DialogFragment;
 import com.example.bamboo.demoweek1.view.fragment.GuideFragment;
 import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
-
-import static com.example.bamboo.demoweek1.service.BluetoothConnectionService.kMySignalsId;
-
 
 public class MainActivity extends AppCompatActivity implements SoundInterface, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
     public static boolean OFFLINE_FLAG = false;
@@ -70,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("lifecycle", "on create");
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
@@ -84,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
                 mBound = true;
                 up = 0;
                 mBluetoothService.setClient(MainActivity.this);
-                Log.d("lifecycle", "bind: " + binder);
-                Log.d("lifecycle", "bind: " + MainActivity.this);
             }
 
             @Override
@@ -271,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         super.onPause();
         unregisterBR();
         pauseService();
-        Log.d("lifecycle", "on pause");
 
     }
 
@@ -280,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
         super.onResume();
         registerBR();
         resumeService();
-        Log.d("lifecycle", "on ressume");
     }
 
     @Override
@@ -308,7 +291,6 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("lifecycle", "on start");
     }
 
     @Override
@@ -319,13 +301,11 @@ public class MainActivity extends AppCompatActivity implements SoundInterface, A
             mBound = false;
             mBluetoothService = null;
             stopService(intent);
-            Log.d("lifecycle", "unbind" + mBound);
         }
         if (mSoundBound) {
             unbindService(mSoundConnection);
             mSoundService.stopSelf();
         }
-        Log.d("lifecycle", "on stop");
     }
 
     @Override

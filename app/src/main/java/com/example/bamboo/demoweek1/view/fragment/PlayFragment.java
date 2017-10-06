@@ -1,7 +1,5 @@
 package com.example.bamboo.demoweek1.view.fragment;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,13 +10,10 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 

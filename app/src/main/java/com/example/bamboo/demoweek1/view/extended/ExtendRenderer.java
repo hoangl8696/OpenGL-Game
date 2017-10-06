@@ -1,16 +1,13 @@
 package com.example.bamboo.demoweek1.view.extended;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.example.bamboo.demoweek1.SoundInterface;
-import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 import com.example.bamboo.demoweek1.view.object.Ground;
 import com.example.bamboo.demoweek1.view.object.Obstacle;
 import com.example.bamboo.demoweek1.view.object.ObstacleTriangle;
@@ -112,7 +109,6 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
             } else {
                 list.get(i).draw(mMVPMatrix, true, null);
                 if (collisionCheck(mSquare, list.get(i))) {
-                    Log.d("Collision", "true");
                     mContext.playCollide();
                     long lastClickTime = mLastClickTime;
                     long now = System.currentTimeMillis();
@@ -146,7 +142,6 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         } else {
             // Register
             isObstacle = true;
-            Log.d("New obj", Integer.toString(list.size()));
         }
     }
 

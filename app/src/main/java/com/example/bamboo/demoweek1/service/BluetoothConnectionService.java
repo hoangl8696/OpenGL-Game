@@ -10,14 +10,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.IntDef;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.bamboo.demoweek1.MainActivity;
 import com.libelium.mysignalsconnectkit.BluetoothManagerHelper;
 import com.libelium.mysignalsconnectkit.BluetoothManagerService;
 import com.libelium.mysignalsconnectkit.callbacks.BluetoothManagerCharacteristicsCallback;

@@ -10,12 +10,9 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.example.bamboo.demoweek1.MainActivity;
-
-import java.io.IOException;
 
 public class SoundService extends Service implements MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener{
     private final IBinder ibinder = new LocalBinder();

@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -207,7 +206,6 @@ public class CalibrationFragment extends android.app.Fragment {
     }
 
     public void airflowData (int data) {
-        Log.d("DEBUG", "AIRFLOWDATA: " + Integer.toString(data));
         mAirflowData = (int) Math.floor(data / 10);
     }
 
