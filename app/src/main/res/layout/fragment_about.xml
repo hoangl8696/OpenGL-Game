@@ -29,7 +29,7 @@
             android:id="@+id/textView5"
             android:layout_width="585dp"
             android:layout_height="246dp"
-            android:text="Developer team: \nOlli Lehmusvuori\nLy Hoang\n\n\nversion 0.0.1"
+            android:text="Developer team: \nOlli Lehmusvuori\nLy Hoang\n\n\nversion 1.0.0"
             android:textSize="25sp"
             android:gravity="center"
             android:textColor="@color/colorAccent"
