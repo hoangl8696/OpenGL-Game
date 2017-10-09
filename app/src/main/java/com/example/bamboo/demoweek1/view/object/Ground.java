@@ -10,6 +10,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+//Class for drawing ground
 public class Ground implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;

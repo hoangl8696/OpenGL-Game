@@ -27,23 +27,29 @@ import com.example.bamboo.demoweek1.view.fragment.MenuScreenFragment;
 import com.example.bamboo.demoweek1.view.fragment.PlayFragment;
 
 public class MainActivity extends AppCompatActivity implements InstructionFragment.OnInstructionFragmentInteractionListener, SoundInterface, AboutFragment.OnAboutFragmentInteractionListener, GuideFragment.OnGuideFragmentInteractionListener, CalibrationFragment.OnCalibrationFragmentInteractionListener, PlayFragment.OnPlayFragmentInteractionListener, BluetoothConnectionService.SensorResult, MenuScreenFragment.OnMenuFragmentInteractionListener {
+
     public static boolean OFFLINE_FLAG = false;
     private static boolean JUMP_FLAG = false;
-    public static final String NEW_AUDIO = "com.example.bamboo.demoweek1.NewAudio";
 
     private long mLastClickTime;
 
     private Intent intent;
 
+    public static final String NEW_AUDIO = "com.example.bamboo.demoweek1.NewAudio";
+
     private BluetoothConnectionService mBluetoothService;
     private SoundService mSoundService;
+
     private PlayFragment playFragment;
     private CalibrationFragment calibrationFragment;
     private GuideFragment guideFragment;
     private AboutFragment aboutFragment;
     private InstructionFragment instructionFragment;
+
     private int up;
+
     private IntentFilter mFilter;
+
     private BatteryMonitoringBroadcastReceiver mReceiver;
 
     private boolean mBound = false;
@@ -57,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
 
     private ServiceConnection mSoundConnection;
 
+
+    //Activity lifecycle methods
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         setContentView(R.layout.activity_main);
         menuScreenTransaction();
         setUpBR();
+
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -96,6 +105,71 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         };
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mIsPlaying) {
+            showExitDialog();
+        } else {
+            if (getFragmentManager().getBackStackEntryCount() > 0) {
+                getFragmentManager().popBackStack();
+            } else {
+                showExitDialog();
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterBR();
+        pauseService();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerBR();
+        resumeService();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("Service state", mBound);
+        outState.putBoolean("Sound Service state", mSoundBound);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mBound = savedInstanceState.getBoolean("Service state");
+        mSoundBound = savedInstanceState.getBoolean("Sound Service state");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+            mBluetoothService = null;
+            stopService(intent);
+        }
+        if (mSoundBound) {
+            unbindService(mSoundConnection);
+            mSoundBound = false;
+            mSoundService.stopSelf();
+            mSoundService = null;
+        }
+    }
+
+    //Activity helper methods
     public void playAudio (String path) {
         if (!mSoundBound) {
             Intent playIntent = new Intent (this, SoundService.class);
@@ -128,17 +202,124 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mIsPlaying) {
-            showExitDialog();
+    //Method for updating the battery status
+    public void receiver (int status, float percentage) {
+        if (status == BatteryManager.BATTERY_PLUGGED_AC || status == BatteryManager.BATTERY_PLUGGED_USB) {
+            mIsCharging = true;
         } else {
-            if (getFragmentManager().getBackStackEntryCount() > 0) {
-                getFragmentManager().popBackStack();
-            } else {
-                showExitDialog();
-            }
+            mIsCharging = false;
         }
+    }
+
+    private void startService() {
+        if (!mBound) {
+            intent = new Intent(this, BluetoothConnectionService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+            startService(intent);
+        }
+    }
+
+    private void showDieDialog() {
+        final String DIALOG_TITLE = "You Die!";
+        final String DIALOG_DESCRIPTION = "Do you want to retry or exit the game?";
+        final String DIALOG_POS_BTN = "Retry";
+        final String DIALOG_NEG_BTN = "Exit";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("die dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playScreenTransaction(-1);
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                finish();
+            }
+        }, MainActivity.this);
+        dialogFragment.show(manager, "die dialog");
+    }
+
+    private void showOfflineDialog() {
+        final String DIALOG_TITLE = "Offline mode!";
+        final String DIALOG_DESCRIPTION = "Do you want to use offline mode? You don't need to be plugged in";
+        final String DIALOG_POS_BTN = "Yes";
+        final String DIALOG_NEG_BTN = "No";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("offline dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                showCameraDialog();
+                OFFLINE_FLAG = true;
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                OFFLINE_FLAG = false;
+                if (mIsCharging) {
+                    startService();
+                    calibrationScreenTransaction();
+                } else {
+                    showPlayDialog();
+                }
+            }
+        }, MainActivity.this);
+        dialogFragment.show(manager, "offline dialog");
+    }
+
+    private void showCameraDialog() {
+        final String DIALOG_TITLE = "Game is ready!";
+        final String DIALOG_DESCRIPTION = "Do you also want to take a picture, this will be used to customize your cube";
+        final String DIALOG_POS_BTN = "Picture";
+        final String DIALOG_NEG_BTN = "Default";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("camera dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playScreenTransaction(0);
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                playScreenTransaction(-1);
+            }
+        }, MainActivity.this);
+        dialogFragment.show(manager, "camera dialog");
+    }
+
+    private void showPlayDialog() {
+        final String DIALOG_TITLE = "Not plugged in!";
+        final String DIALOG_DESCRIPTION = "This game is battery intensive, plug your phone to a power source";
+        final String DIALOG_POS_BTN = "Retry";
+        final String DIALOG_NEG_BTN = "Cancel";
+        FragmentManager manager = getFragmentManager();
+        Fragment fragment = manager.findFragmentByTag("plug in dialog");
+        if (fragment != null) {
+            manager.beginTransaction().remove(fragment).commit();
+        }
+        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
+        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
+            @Override
+            public void onPositiveButtonPressed() {
+                playButtonPressed();
+            }
+            @Override
+            public void onNegativeButtonPressed() {
+                //Dismiss, nothing happen
+            }
+        }, MainActivity.this);
+        dialogFragment.show(manager, "plug in dialog");
     }
 
     private void showExitDialog() {
@@ -228,14 +409,9 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         getSupportFragmentManager().executePendingTransactions();
     }
 
-    public void receiver (int status, float percentage) {
-        if (status == BatteryManager.BATTERY_PLUGGED_AC || status == BatteryManager.BATTERY_PLUGGED_USB) {
-            mIsCharging = true;
-        } else {
-            mIsCharging = false;
-        }
-    }
+    //Methods from interfaces
 
+    //Post data directly to playfragment for controlling character and calibration fragment for checking
     @Override
     public void airflowStreaming(int data) {
         if (calibrationFragment != null) {
@@ -262,65 +438,8 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterBR();
-        pauseService();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerBR();
-        resumeService();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putBoolean("Service state", mBound);
-        outState.putBoolean("Sound Service state", mSoundBound);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mBound = savedInstanceState.getBoolean("Service state");
-        mSoundBound = savedInstanceState.getBoolean("Sound Service state");
-    }
-
-    private void startService() {
-        if (!mBound) {
-            intent = new Intent(this, BluetoothConnectionService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            startService(intent);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-            mBluetoothService = null;
-            stopService(intent);
-        }
-        if (mSoundBound) {
-            unbindService(mSoundConnection);
-            mSoundBound = false;
-            mSoundService.stopSelf();
-            mSoundService = null;
-        }
-    }
-
+    //Check method for calibration fragment's airflow data, register 10 deep breaths before the calibration become valid
+    //Control method for character in play fragment
     @Override
     public void goUp() {
         up++;
@@ -338,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
+    //Control method for character in play fragment
     @Override
     public void goDown() {
         if (playFragment != null) {
@@ -347,6 +467,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
+    //Control method for adding obstacle
     @Override
     public void addObstacle() {
         if (playFragment != null) {
@@ -354,6 +475,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
+    //Pause service when phone is lying horizontally
     @Override
     public void pauseService() {
         if (mBluetoothService != null) {
@@ -361,6 +483,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
+    //Resume service when phone in standing position
     @Override
     public void resumeService() {
         if (mBluetoothService != null) {
@@ -368,40 +491,19 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
+    //Method call when you die
     @Override
     public void youDie() {
         showDieDialog();
     }
 
+    //Restart service when the app get start
     @Override
     public void restartService() {
         startService();
     }
 
-    private void showDieDialog() {
-        final String DIALOG_TITLE = "You Die!";
-        final String DIALOG_DESCRIPTION = "Do you want to retry or exit the game?";
-        final String DIALOG_POS_BTN = "Retry";
-        final String DIALOG_NEG_BTN = "Exit";
-        FragmentManager manager = getFragmentManager();
-        Fragment fragment = manager.findFragmentByTag("die dialog");
-        if (fragment != null) {
-            manager.beginTransaction().remove(fragment).commit();
-        }
-        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
-        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
-            @Override
-            public void onPositiveButtonPressed() {
-                playScreenTransaction(-1);
-            }
-            @Override
-            public void onNegativeButtonPressed() {
-                finish();
-            }
-        }, MainActivity.this);
-        dialogFragment.show(manager, "die dialog");
-    }
-
+    //Callback when calibration is finished
     @Override
     public void calibrate(boolean i) {
         if (i) {
@@ -411,37 +513,7 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
-    private void showOfflineDialog() {
-        final String DIALOG_TITLE = "Offline mode!";
-        final String DIALOG_DESCRIPTION = "Do you want to use offline mode? You don't need to be plugged in";
-        final String DIALOG_POS_BTN = "Yes";
-        final String DIALOG_NEG_BTN = "No";
-        FragmentManager manager = getFragmentManager();
-        Fragment fragment = manager.findFragmentByTag("offline dialog");
-        if (fragment != null) {
-            manager.beginTransaction().remove(fragment).commit();
-        }
-        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
-        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
-            @Override
-            public void onPositiveButtonPressed() {
-                showCameraDialog();
-                OFFLINE_FLAG = true;
-            }
-            @Override
-            public void onNegativeButtonPressed() {
-                OFFLINE_FLAG = false;
-                if (mIsCharging) {
-                    startService();
-                    calibrationScreenTransaction();
-                } else {
-                    showPlayDialog();
-                }
-            }
-        }, MainActivity.this);
-        dialogFragment.show(manager, "offline dialog");
-    }
-
+    //Method for setting live data stream's RHR
     @Override
     public void setRestingPulse(final int data) {
         if (playFragment!=null) {
@@ -454,28 +526,9 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
         }
     }
 
-    private void showCameraDialog() {
-        final String DIALOG_TITLE = "Game is ready!";
-        final String DIALOG_DESCRIPTION = "Do you also want to take a picture, this will be used to customize your cube";
-        final String DIALOG_POS_BTN = "Picture";
-        final String DIALOG_NEG_BTN = "Default";
-        FragmentManager manager = getFragmentManager();
-        Fragment fragment = manager.findFragmentByTag("camera dialog");
-        if (fragment != null) {
-            manager.beginTransaction().remove(fragment).commit();
-        }
-        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
-        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
-            @Override
-            public void onPositiveButtonPressed() {
-                playScreenTransaction(0);
-            }
-            @Override
-            public void onNegativeButtonPressed() {
-                playScreenTransaction(-1);
-            }
-        }, MainActivity.this);
-        dialogFragment.show(manager, "camera dialog");
+    @Override
+    public void instructionBackPressed() {
+        menuScreenTransaction();
     }
 
     @Override
@@ -496,30 +549,6 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
     @Override
     public void playButtonPressed() {
         showOfflineDialog();
-    }
-
-    private void showPlayDialog() {
-        final String DIALOG_TITLE = "Not plugged in!";
-        final String DIALOG_DESCRIPTION = "This game is battery intensive, plug your phone to a power source";
-        final String DIALOG_POS_BTN = "Retry";
-        final String DIALOG_NEG_BTN = "Cancel";
-        FragmentManager manager = getFragmentManager();
-        Fragment fragment = manager.findFragmentByTag("plug in dialog");
-        if (fragment != null) {
-            manager.beginTransaction().remove(fragment).commit();
-        }
-        DialogFragment dialogFragment = DialogFragment.newInstance(DIALOG_TITLE, DIALOG_DESCRIPTION, DIALOG_POS_BTN, DIALOG_NEG_BTN);
-        dialogFragment.setListener(new DialogFragment.OnDialogFragmentInteractionListener() {
-            @Override
-            public void onPositiveButtonPressed() {
-                playButtonPressed();
-            }
-            @Override
-            public void onNegativeButtonPressed() {
-                //Dismiss, nothing happen
-            }
-        }, MainActivity.this);
-        dialogFragment.show(manager, "plug in dialog");
     }
 
     @Override
@@ -563,11 +592,6 @@ public class MainActivity extends AppCompatActivity implements InstructionFragme
             // Register the click
             playAudio("collide");
         }
-    }
-
-    @Override
-    public void instructionBackPressed() {
-        menuScreenTransaction();
     }
 
     private class BatteryMonitoringBroadcastReceiver extends BroadcastReceiver {

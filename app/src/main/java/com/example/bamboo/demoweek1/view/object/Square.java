@@ -10,6 +10,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+//Class handle drawing the player and player behavior relative to input
 public class Square implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;

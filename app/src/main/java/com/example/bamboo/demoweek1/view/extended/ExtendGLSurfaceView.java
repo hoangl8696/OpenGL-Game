@@ -10,6 +10,7 @@ import com.example.bamboo.demoweek1.SoundInterface;
 
 import static com.example.bamboo.demoweek1.MainActivity.OFFLINE_FLAG;
 
+//Class in charge of offline mode behaviour and passing along contexts
 public class ExtendGLSurfaceView extends GLSurfaceView {
     private ExtendRenderer mRenderer;
     private ExtendRenderer.HealthControl mContext;

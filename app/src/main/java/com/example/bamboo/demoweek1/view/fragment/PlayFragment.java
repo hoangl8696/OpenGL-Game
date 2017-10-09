@@ -99,6 +99,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         } else {
             ExtendRenderer.setRawData(null);
         }
+        //Live graph creation
         GraphView graph2 = (GraphView) v.findViewById(R.id.graph2);
         mSeries2 = new LineGraphSeries<>();
         graph2.addSeries(mSeries2);
@@ -106,6 +107,7 @@ public class PlayFragment extends android.app.Fragment implements SensorEventLis
         graph2.getViewport().setMinX(0);
         graph2.getViewport().setMaxX(40);
         graph2.getGridLabelRenderer().setTextSize(0.0f);
+        //Do not show graph if in offline mode
         if (OFFLINE_FLAG) {
             mContainer.setVisibility(View.GONE);
         }

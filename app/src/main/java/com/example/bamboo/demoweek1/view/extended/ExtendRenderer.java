@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+//Class in charge of object creation
 public class ExtendRenderer implements GLSurfaceView.Renderer {
     private SoundInterface mContext;
     private HealthControl mHealthControl;
@@ -72,6 +73,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
                 isObstacle = true;
             }
         };
+
+        //Periodically generate obstacle to increase difficulty
         if (mExecutor == null) {
             mExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(10);
             mExecutor.scheduleWithFixedDelay(mPeriodiclyGenerateObstacle, 5000, OBSTACLE_GENERATE_PERIOD, TimeUnit.MILLISECONDS);
@@ -94,6 +97,8 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
         mSquare.draw(mMVPMatrix, isJumping, mContext);
         mGround.draw(mMVPMatrix, false, null);
 
+        //This method is deprecated, only use in earlier version of the app, use to check which obstacle type the fragment
+        //is requesting
         if (isObstacle) {
             if (isTriangleObstacle) {
                 list.add(new ObstacleTriangle());
@@ -105,10 +110,12 @@ public class ExtendRenderer implements GLSurfaceView.Renderer {
 
         for (int i = 0; i < list.size(); i++) {
             if (list.get(i).canRemove()) {
+                //Remove when out of screen
                 list.remove(i);
             } else {
                 list.get(i).draw(mMVPMatrix, true, null);
                 if (collisionCheck(mSquare, list.get(i))) {
+                    //Play collide sound
                     mContext.playCollide();
                     long lastClickTime = mLastClickTime;
                     long now = System.currentTimeMillis();

@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+//Class for drawing obstacle and handle it movement. This class is deprecated, only use in earlier version of this app.
+//This should not be deleted as it is use for future preference
 public class ObstacleTriangle implements ExtendRenderer.DrawObject {
     static final int COORDS_PER_VERTEX = 3;
     static final int VERTEX_STRIDE = COORDS_PER_VERTEX * 4;

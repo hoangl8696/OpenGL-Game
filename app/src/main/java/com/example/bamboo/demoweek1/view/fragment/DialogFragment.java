@@ -13,6 +13,7 @@ import com.example.bamboo.demoweek1.R;
 import com.example.bamboo.demoweek1.SoundInterface;
 import com.example.bamboo.demoweek1.view.extended.ExtendOnClickListener;
 
+//Class to create a custom view for the dialog
 public class DialogFragment extends android.app.DialogFragment {
     private static final String TITLE = "title";
     private static final String DESCRIPTION = "description";

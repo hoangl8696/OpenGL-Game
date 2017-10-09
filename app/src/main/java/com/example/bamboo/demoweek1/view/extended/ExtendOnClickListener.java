@@ -11,6 +11,7 @@ public class ExtendOnClickListener implements View.OnClickListener {
         mSound = sound;
     }
 
+    //Add sound for every click
     @Override
     public void onClick(View view) {
         mSound.playClick();
