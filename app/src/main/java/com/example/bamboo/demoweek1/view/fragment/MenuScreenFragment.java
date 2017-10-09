@@ -36,6 +36,7 @@ public class MenuScreenFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_menu_screen, container, false);
+        // Add buttons to play, about, tutorial and instruction fragments and set listeners to all of them that extend SoundInterface
         mPlay = (ExtendButton) v.findViewById(R.id.play);
         mAbout = (ExtendButton) v.findViewById(R.id.about);
         mGuide = (ExtendButton) v.findViewById(R.id.tutorial);

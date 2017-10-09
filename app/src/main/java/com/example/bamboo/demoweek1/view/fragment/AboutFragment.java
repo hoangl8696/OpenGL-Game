@@ -35,6 +35,7 @@ public class AboutFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_about, container, false);
+        // initialize back button and set listener
         btn = (ImageButton) v.findViewById(R.id.back_buton);
         btn.setOnClickListener(new ExtendOnClickListener(mSound){
             @Override
