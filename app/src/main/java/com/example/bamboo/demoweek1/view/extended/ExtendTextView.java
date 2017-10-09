@@ -22,6 +22,7 @@ public class ExtendTextView extends android.support.v7.widget.AppCompatTextView 
     }
 
     private void setUp () {
+        // Set the custom font to text view
         setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/abc.ttf"));
     }
 }

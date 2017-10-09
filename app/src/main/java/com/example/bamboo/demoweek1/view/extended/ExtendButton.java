@@ -23,6 +23,7 @@ public class ExtendButton extends android.support.v7.widget.AppCompatButton {
     }
 
     private void setUp () {
+        // Set the custom font to button
         setTypeface(Typeface.createFromAsset(getContext().getAssets(), "fonts/abc.ttf"));
     }
 }

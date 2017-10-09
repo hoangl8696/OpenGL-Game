@@ -46,6 +46,7 @@ public class InstructionFragment extends android.app.Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // initialize back button and set listener and extend with SoundInterface
         btn = (ImageButton) view.findViewById(R.id.back_buton);
         btn.setOnClickListener(new ExtendOnClickListener(mSound){
             @Override

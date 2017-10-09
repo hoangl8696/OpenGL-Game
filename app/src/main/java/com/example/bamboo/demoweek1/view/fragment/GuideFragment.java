@@ -36,6 +36,7 @@ public class GuideFragment extends android.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_guide, container, false);
+        // initialize back button and set listener
         btn = (ImageButton) v.findViewById(R.id.back_buton);
         btn.setOnClickListener(new ExtendOnClickListener(mSound){
             @Override
@@ -56,6 +57,7 @@ public class GuideFragment extends android.app.Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        // Add sound interface
         if (context instanceof SoundInterface) {
             mSound = (SoundInterface) context;
         } else {
