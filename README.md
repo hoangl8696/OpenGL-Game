@@ -4,6 +4,8 @@ This is a game made to play with MySignals's sensors. MySignals is a development
 Olli Lehmusvuori ollilehmusvuori@gmail.com
 
 Ly Hoang bambam861996@gmail.com
+## Demo video
+Please follow the link for a demo of the application: https://youtu.be/qDP_GV2sd1c
 ## Getting Started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 See deployment for notes on how to deploy the project on a live system.
@@ -55,4 +57,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-* Thanks to our teachers for helping us get through problems (We deserve 5 btw)
+* Thanks to our teachers for helping us get through problems 
